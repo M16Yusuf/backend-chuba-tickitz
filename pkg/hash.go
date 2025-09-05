@@ -19,14 +19,8 @@ type HashConfig struct {
 	SaltLen uint32
 }
 
-func NewHashConfig(memory, time, keylen, saltlen uint32, thread uint8) *HashConfig {
-	return &HashConfig{
-		Memory:  memory,
-		Time:    time,
-		KeyLen:  keylen,
-		SaltLen: saltlen,
-		Thread:  thread,
-	}
+func NewHashConfig() *HashConfig {
+	return &HashConfig{}
 }
 
 func (h *HashConfig) SetConfig(memory, time, keylen, saltlen uint32, thread uint8) {
