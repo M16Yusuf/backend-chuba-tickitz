@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/m16yusuf/backend-chuba-tickitz/internal/middleware"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/models"
 
 	docs "github.com/m16yusuf/backend-chuba-tickitz/docs"
@@ -15,6 +16,7 @@ import (
 func InitRouter(db *pgxpool.Pool) *gin.Engine {
 	// inisialisasi engine gin
 	router := gin.Default()
+	router.Use(middleware.CORSMiddleware)
 
 	// swaggo configuration
 	docs.SwaggerInfo.BasePath = "/"
