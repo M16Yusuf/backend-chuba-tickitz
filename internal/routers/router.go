@@ -20,7 +20,10 @@ func InitRouter(db *pgxpool.Pool) *gin.Engine {
 	docs.SwaggerInfo.BasePath = "/"
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	// jika route tidak ditemukan kirim response
+	// setup routing
+	InitAuthRouter(router, db)
+
+	// if route not found, send 404 statusNotfound as response
 	router.NoRoute(func(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, models.NoRouteResponse{
 			Message: "salah...",
