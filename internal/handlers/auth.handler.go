@@ -36,25 +36,31 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 	if err := ctx.ShouldBind(&body); err != nil {
 		if strings.Contains(err.Error(), "required") {
 			ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
-				IsSuccess: false,
-				Err:       "Email dan Password harus diisi",
-				Code:      400,
+				Response: models.Response{
+					IsSuccess: false,
+					Code:      400,
+				},
+				Err: "Email dan Password harus diisi",
 			})
 			return
 		}
 		if strings.Contains(err.Error(), "min") {
 			ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
-				IsSuccess: false,
-				Err:       "Password minimum 8 karakter",
-				Code:      400,
+				Response: models.Response{
+					IsSuccess: false,
+					Code:      400,
+				},
+				Err: "Password minimum 8 karakter",
 			})
 			return
 		}
 		log.Println("Internal Server Error.\nCause: ", err.Error())
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
-			IsSuccess: false,
-			Err:       "internal server error",
-			Code:      500,
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: "internal server error",
 		})
 		return
 	}
@@ -64,16 +70,20 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 	if err != nil {
 		if strings.Contains(err.Error(), "user not found") {
 			ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
-				IsSuccess: false,
-				Err:       "email atau Password salah",
-				Code:      400,
+				Response: models.Response{
+					IsSuccess: false,
+					Code:      400,
+				},
+				Err: "email atau Password salah",
 			})
 			return
 		}
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
-			IsSuccess: false,
-			Err:       "internal server error",
-			Code:      500,
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: "internal server error",
 		})
 		return
 	}
@@ -90,9 +100,11 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 			log.Println("Error during Hashing")
 		}
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
-			IsSuccess: false,
-			Err:       "internal server error",
-			Code:      500,
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: "internal server error",
 		})
 		return
 	}
@@ -100,9 +112,11 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 	// if not match sen https status as response
 	if !isMatched {
 		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
-			IsSuccess: false,
-			Err:       "Nama atau Password salah",
-			Code:      400,
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      400,
+			},
+			Err: "Nama atau Password salah",
 		})
 		return
 	}
@@ -113,15 +127,20 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 	if err != nil {
 		log.Println("Internal Server Error.\nCause: ", err.Error())
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
-			IsSuccess: false,
-			Err:       "internal server error",
-			Code:      500,
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: "internal server error",
 		})
 		return
 	}
 	ctx.JSON(http.StatusOK, models.TokenResponse{
-		IsSuccess: true,
-		Token:     jwtToken,
+		Response: models.Response{
+			IsSuccess: true,
+			Code:      200,
+		},
+		Token: jwtToken,
 	})
 }
 
@@ -134,16 +153,18 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 // @produce			json
 // @failure 		400 		{object} models.ErrorResponse "Bad Request"
 // @failure 		500 		{object} models.ErrorResponse "Internal Server Error"
-// @success			200			{object} models.SuccessResponse
+// @success			200			{object} models.ProfileResponse
 func (a *AuthHandler) Register(ctx *gin.Context) {
 	var body models.Auth
 
 	// Binding data and show if there is error when binding data
 	if err := ctx.ShouldBind(&body); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
-			IsSuccess: false,
-			Err:       "Failed binding data ...",
-			Code:      500,
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: "Failed binding data ...",
 		})
 		return
 	}
@@ -151,9 +172,11 @@ func (a *AuthHandler) Register(ctx *gin.Context) {
 	// validation register
 	if err := utils.RegisterValidation(body); err != nil {
 		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
-			IsSuccess: false,
-			Err:       err.Error(),
-			Code:      400,
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      400,
+			},
+			Err: err.Error(),
 		})
 		return
 	} else {
@@ -164,9 +187,11 @@ func (a *AuthHandler) Register(ctx *gin.Context) {
 		if err != nil {
 			log.Println("Failed hash new password ...")
 			ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
-				IsSuccess: false,
-				Err:       err.Error(),
-				Code:      500,
+				Response: models.Response{
+					IsSuccess: false,
+					Code:      500,
+				},
+				Err: err.Error(),
 			})
 			return
 		}
@@ -175,16 +200,20 @@ func (a *AuthHandler) Register(ctx *gin.Context) {
 		user, err := a.ar.NewUser(ctx.Request.Context(), body.Email, hash)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
-				IsSuccess: false,
-				Err:       err.Error(),
-				Code:      400,
+				Response: models.Response{
+					IsSuccess: false,
+					Code:      400,
+				},
+				Err: err.Error(),
 			})
 			return
 		}
-		ctx.JSON(http.StatusOK, models.SuccessResponse{
-			IsSuccess: true,
-			Data:      user,
-			Code:      200,
+		ctx.JSON(http.StatusOK, models.ProfileResponse{
+			Response: models.Response{
+				IsSuccess: true,
+				Code:      200,
+			},
+			Data: user,
 		})
 	}
 }

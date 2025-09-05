@@ -15,8 +15,10 @@ import (
 // @Failure 404 {object} models.ErrorResponse
 func NoRouteHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusNotFound, models.ErrorResponse{
-		IsSuccess: false,
-		Err:       "Route not found ...",
-		Code:      404,
+		Response: models.Response{
+			IsSuccess: false,
+			Code:      404,
+		},
+		Err: "Route not found ...",
 	})
 }
