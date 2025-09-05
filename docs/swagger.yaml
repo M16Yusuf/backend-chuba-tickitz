@@ -1,8 +1,123 @@
-host: localhost:8080
+definitions:
+  models.Auth:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.ErrorResponse:
+    properties:
+      code:
+        example: 400
+        type: integer
+      error:
+        example: Error message...
+        type: string
+      is_success:
+        example: false
+        type: boolean
+    type: object
+  models.SuccessResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data: {}
+      is_success:
+        example: true
+        type: boolean
+    type: object
+  models.TokenResponse:
+    properties:
+      is_success:
+        example: true
+        type: boolean
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzU3MDM4NjQyfQ.J2MAUbAZvFpQl18BkSSyZOSMnbZxPziyZ6q6Bsuj8GU
+        type: string
+    type: object
+host: 127.0.0.1:8080
 info:
   contact: {}
   description: Ticketing application with restful API powered by gin
   title: CHUBA TICKITZ
   version: "1.0"
-paths: {}
+paths:
+  /{any}:
+    get:
+      description: if route not found, send 404 statusNotfound as response
+      produces:
+      - application/json
+      responses:
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - NoRoute
+  /auth:
+    post:
+      consumes:
+      - application/json
+      description: login using email and password and return as response with JWT
+        token
+      parameters:
+      - description: Input email and password
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Auth'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - login
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register new user input email and password and return new data
+        users
+      parameters:
+      - description: Input email and password new user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Auth'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - Register
 swagger: "2.0"
