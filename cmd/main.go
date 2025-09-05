@@ -8,6 +8,10 @@ import (
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/routers"
 )
 
+// @title 				CHUBA TICKITZ
+// @version 			1.0
+// @description 	Ticketing application with restful API powered by gin
+// @host 					localhost:8080
 func main() {
 	// manual load ENV
 	if err := godotenv.Load(); err != nil {

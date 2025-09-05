@@ -1,4 +1,8 @@
+host: localhost:8080
 info:
   contact: {}
+  description: Ticketing application with restful API powered by gin
+  title: CHUBA TICKITZ
+  version: "1.0"
 paths: {}
 swagger: "2.0"

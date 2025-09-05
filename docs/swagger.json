@@ -1,7 +1,11 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "Ticketing application with restful API powered by gin",
+        "title": "CHUBA TICKITZ",
+        "contact": {},
+        "version": "1.0"
     },
+    "host": "localhost:8080",
     "paths": {}
 }
