@@ -17,6 +17,15 @@ func NewMovieHandler(movRepo *repositories.MovieRepository) *MovieHandler {
 	return &MovieHandler{movRepo: movRepo}
 }
 
+// UpComing
+// @Tags 				movie
+// @Router 			/movies/upcoming [GET]
+// @Description Get upcomes movies, filter movies that not aired yet
+// @Param				page	query		int 	false 	"opsional query for pagination"
+// @produce			json
+// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
+// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @success			200 	{object}	models.MoviesResponse
 func (m *MovieHandler) UpcomingMovie(ctx *gin.Context) {
 	// Make pagenation using query LIMIT dan OFFSET
 	page, err := strconv.Atoi(ctx.Query("page"))

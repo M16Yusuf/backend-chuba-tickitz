@@ -13,33 +13,97 @@ definitions:
   models.ErrorResponse:
     properties:
       code:
-        example: 400
         type: integer
       error:
         example: Error message...
         type: string
       is_success:
-        example: false
         type: boolean
     type: object
-  models.SuccessResponse:
+  models.Genre:
+    properties:
+      genre_id:
+        type: integer
+      genre_name:
+        type: string
+    type: object
+  models.MovieList:
+    properties:
+      backdrop_path:
+        type: string
+      director_id:
+        type: integer
+      duration:
+        type: integer
+      genres:
+        items:
+          $ref: '#/definitions/models.Genre'
+        type: array
+      movie_id:
+        type: integer
+      overview:
+        type: string
+      poster_path:
+        type: string
+      release_date:
+        type: string
+      title:
+        type: string
+    type: object
+  models.MoviesResponse:
     properties:
       code:
-        example: 200
         type: integer
-      data: {}
+      data:
+        items:
+          $ref: '#/definitions/models.MovieList'
+        type: array
       is_success:
-        example: true
+        type: boolean
+      page:
+        type: integer
+    type: object
+  models.ProfileResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/models.User'
+      is_success:
         type: boolean
     type: object
   models.TokenResponse:
     properties:
+      code:
+        type: integer
       is_success:
-        example: true
         type: boolean
       token:
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzU3MDM4NjQyfQ.J2MAUbAZvFpQl18BkSSyZOSMnbZxPziyZ6q6Bsuj8GU
         type: string
+    type: object
+  models.User:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      point:
+        type: integer
+      profile_path:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: integer
     type: object
 host: 127.0.0.1:8080
 info:
@@ -109,7 +173,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.SuccessResponse'
+            $ref: '#/definitions/models.ProfileResponse'
         "400":
           description: Bad Request
           schema:
@@ -120,4 +184,29 @@ paths:
             $ref: '#/definitions/models.ErrorResponse'
       tags:
       - Register
+  /movies/upcoming:
+    get:
+      description: Get upcomes movies, filter movies that not aired yet
+      parameters:
+      - description: opsional query for pagination
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MoviesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - movie
 swagger: "2.0"
