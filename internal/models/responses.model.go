@@ -12,6 +12,12 @@ type TokenResponse struct {
 
 type ErrorResponse struct {
 	IsSuccess bool   `json:"is_success" example:"false"`
-	Err       string `json:"error" example:"email atau Password salah"`
+	Err       string `json:"error" example:"Error message..."`
 	Code      int    `json:"code,omitempty" example:"400"`
+}
+
+type SuccessResponse struct {
+	IsSuccess bool `json:"is_success" example:"true"`
+	Data      any  `json:"data"`
+	Code      int  `json:"code,omitempty" example:"200"`
 }
