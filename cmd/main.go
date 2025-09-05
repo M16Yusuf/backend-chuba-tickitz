@@ -11,7 +11,7 @@ import (
 // @title 				CHUBA TICKITZ
 // @version 			1.0
 // @description 	Ticketing application with restful API powered by gin
-// @host 					localhost:8080
+// @host 					127.0.0.1:8080
 func main() {
 	// manual load ENV
 	if err := godotenv.Load(); err != nil {
