@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/models"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/repositories"
+	"github.com/m16yusuf/backend-chuba-tickitz/internal/utils"
 	"github.com/m16yusuf/backend-chuba-tickitz/pkg"
 )
 
@@ -21,14 +22,15 @@ func NewAuthHandler(ar *repositories.AuthRepository) *AuthHandler {
 }
 
 // Login
-// @tags 			login
-// @router 		/auth 	[POST]
-// @Param 		body		body		 models.Auth true "Input email and password"
-// @accept 		json
-// @produce 	json
-// @failure 	400 		{object} models.ErrorResponse "Bad Request"
-// @failure 	500 		{object} models.ErrorResponse "Internal Server Error"
-// @success 	200 		{object} models.TokenResponse
+// @tags 				login
+// @router 	 		/auth 	[POST]
+// @Description login using email and password and return as response with JWT token
+// @Param 			body		body		 models.Auth true 		"Input email and password"
+// @accept 			json
+// @produce 		json
+// @failure 		400 		{object} models.ErrorResponse "Bad Request"
+// @failure 		500 		{object} models.ErrorResponse "Internal Server Error"
+// @success 		200 		{object} models.TokenResponse
 func (a *AuthHandler) Login(ctx *gin.Context) {
 	var body models.Auth
 	if err := ctx.ShouldBind(&body); err != nil {
@@ -121,4 +123,68 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 		IsSuccess: true,
 		Token:     jwtToken,
 	})
+}
+
+// Register
+// @Tags					Register
+// @Router			/auth/register [post]
+// @Description	Register new user input email and password and return new data users
+// @Param				body		body 		 models.Auth 	true		"Input email and password new user"
+// @accept			json
+// @produce			json
+// @failure 		400 		{object} models.ErrorResponse "Bad Request"
+// @failure 		500 		{object} models.ErrorResponse "Internal Server Error"
+// @success			200			{object} models.SuccessResponse
+func (a *AuthHandler) Register(ctx *gin.Context) {
+	var body models.Auth
+
+	// Binding data and show if there is error when binding data
+	if err := ctx.ShouldBind(&body); err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			IsSuccess: false,
+			Err:       "Failed binding data ...",
+			Code:      500,
+		})
+		return
+	}
+
+	// validation register
+	if err := utils.RegisterValidation(body); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
+			IsSuccess: false,
+			Err:       err.Error(),
+			Code:      400,
+		})
+		return
+	} else {
+		// hash new password??
+		hc := pkg.NewHashConfig()
+		hc.UseRecommended()
+		hash, err := hc.GenHash(body.Password)
+		if err != nil {
+			log.Println("Failed hash new password ...")
+			ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+				IsSuccess: false,
+				Err:       err.Error(),
+				Code:      500,
+			})
+			return
+		}
+		// if inputs is already valid format,
+		// input and check if the email already registered
+		user, err := a.ar.NewUser(ctx.Request.Context(), body.Email, hash)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
+				IsSuccess: false,
+				Err:       err.Error(),
+				Code:      400,
+			})
+			return
+		}
+		ctx.JSON(http.StatusOK, models.SuccessResponse{
+			IsSuccess: true,
+			Data:      user,
+			Code:      200,
+		})
+	}
 }
