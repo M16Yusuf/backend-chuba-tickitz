@@ -5,6 +5,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/configs"
+	"github.com/m16yusuf/backend-chuba-tickitz/internal/routers"
 )
 
 func main() {
@@ -28,4 +29,9 @@ func main() {
 	}
 	log.Println("DB connected")
 
+	// Inisialization engine gin, HTTP framework
+	router := routers.InitRouter(db)
+	//  run the engine gin
+	// Run this project on 127.0.0.1:8080 or localhost:8080
+	router.Run("127.0.0.1:8080")
 }
