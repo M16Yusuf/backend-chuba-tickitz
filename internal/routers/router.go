@@ -22,6 +22,7 @@ func InitRouter(db *pgxpool.Pool) *gin.Engine {
 
 	// setup routing
 	InitAuthRouter(router, db)
+	InitMovieRouter(router, db)
 
 	router.NoRoute(handlers.NoRouteHandler)
 	return router
