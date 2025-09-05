@@ -33,3 +33,16 @@ func (a *AuthRepository) GetUserWithEmail(reqContxt context.Context, email strin
 	}
 	return User, nil
 }
+
+// function add New users
+func (a *AuthRepository) NewUser(reqContxt context.Context, email, password string) (models.User, error) {
+	sql := "INSERT INTO users(email, password) VALUES ($1, $2) RETURNING id, first_name, last_name, email, role, gender"
+	values := []any{email, password}
+	var NewUser models.User
+	err := a.db.QueryRow(reqContxt, sql, values...).Scan(&NewUser.Id, &NewUser.FirstName, &NewUser.LastName, &NewUser.Email, &NewUser.Role, &NewUser.Gender)
+	if err != nil {
+		log.Println("Scan Error, ", err.Error())
+		return models.User{}, err
+	}
+	return NewUser, nil
+}
