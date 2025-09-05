@@ -1,12 +1,10 @@
 package routers
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/m16yusuf/backend-chuba-tickitz/internal/handlers"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/middleware"
-	"github.com/m16yusuf/backend-chuba-tickitz/internal/models"
 
 	docs "github.com/m16yusuf/backend-chuba-tickitz/docs"
 	swaggerfiles "github.com/swaggo/files"
@@ -25,13 +23,6 @@ func InitRouter(db *pgxpool.Pool) *gin.Engine {
 	// setup routing
 	InitAuthRouter(router, db)
 
-	// if route not found, send 404 statusNotfound as response
-	router.NoRoute(func(ctx *gin.Context) {
-		ctx.JSON(http.StatusNotFound, models.NoRouteResponse{
-			Message: "salah...",
-			Status:  "Tidak ditemukan",
-		})
-	})
-
+	router.NoRoute(handlers.NoRouteHandler)
 	return router
 }
