@@ -125,3 +125,64 @@ func (m *MovieHandler) PopularMovie(ctx *gin.Context) {
 		Data: movies,
 	})
 }
+
+// Filter Search and genres
+// @Tags 				Movies
+// @Router 			/movies/filter/:search/:genres [GET]
+// @Description Get popular movies, filter movies already rated on every transaction
+// @Param				page		query		int 		false 	"opsional query for pagination"
+// @Param				search	query		string 	false 	"opsional query for search title"
+// @Param				genres	query		array 	false 	"opsional query for filter genres"
+// @produce			json
+// @failure 		400			{object} 	models.ErrorResponse "Bad Request"
+// @failure 		500 		{object} 	models.ErrorResponse "Internal Server Error"
+// @success			200 		{object}	models.MoviesResponse
+func (m *MovieHandler) FilterMovie(ctx *gin.Context) {
+	// Make pagenation using query LIMIT dan OFFSET
+	page, err := strconv.Atoi(ctx.Query("page"))
+	if err != nil {
+		page = 1
+	}
+	limit := 20
+	offset := (page - 1) * limit
+
+	// search and genre filter
+	search := ctx.Query("search")
+	genres := ctx.QueryArray("genres")
+
+	// call function query from repository to get popular movies
+	movies, err := m.movRepo.GetFiltered(ctx.Request.Context(), offset, limit, search, genres)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: err.Error(),
+		})
+		return
+	}
+
+	// validate if movies is return empty data
+	if len(movies) == 0 {
+		ctx.JSON(http.StatusNotFound, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: true,
+				Code:      404,
+				Page:      page,
+			},
+			Err: "Empty movie list",
+		})
+		return
+	}
+
+	// send data movies as response
+	ctx.JSON(http.StatusOK, models.MoviesResponse{
+		Response: models.Response{
+			IsSuccess: true,
+			Code:      200,
+			Page:      page,
+		},
+		Data: movies,
+	})
+}
