@@ -128,11 +128,12 @@ func (m *MovieHandler) PopularMovie(ctx *gin.Context) {
 
 // Filter Search and genres
 // @Tags 				Movies
-// @Router 			/movies/filter/:search/:genres [GET]
+// @Router 			/movies/ [GET]
 // @Description Get popular movies, filter movies already rated on every transaction
-// @Param				page		query		int 		false 	"opsional query for pagination"
-// @Param				search	query		string 	false 	"opsional query for search title"
-// @Param				genres	query		array 	false 	"opsional query for filter genres"
+// @Param				page		query		int 		 false 	"opsional query for pagination"
+// @Param				search	query		string 	 false 	"opsional query for search title"
+// @Param				genres	query		[]string false 	"opsional query for filter genres" collectionFormat(multi)
+// @Produce 		json
 // @produce			json
 // @failure 		400			{object} 	models.ErrorResponse "Bad Request"
 // @failure 		500 		{object} 	models.ErrorResponse "Internal Server Error"

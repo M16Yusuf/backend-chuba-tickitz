@@ -14,5 +14,5 @@ func InitMovieRouter(router *gin.Engine, db *pgxpool.Pool) {
 
 	movieRouter.GET("/upcoming", mh.UpcomingMovie)
 	movieRouter.GET("/popular", mh.PopularMovie)
-	movieRouter.GET("/filter/:search/:genres", mh.FilterMovie)
+	movieRouter.GET("", mh.FilterMovie)
 }
