@@ -25,3 +25,8 @@ type MoviesResponse struct {
 	Response
 	Data []MovieList
 }
+
+type ScheduleResponse struct {
+	Response
+	Data []Schedule
+}
