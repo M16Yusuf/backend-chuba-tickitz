@@ -19,6 +19,8 @@ definitions:
         type: string
       is_success:
         type: boolean
+      page:
+        type: integer
     type: object
   models.Genre:
     properties:
@@ -71,6 +73,8 @@ definitions:
         $ref: '#/definitions/models.User'
       is_success:
         type: boolean
+      page:
+        type: integer
     type: object
   models.TokenResponse:
     properties:
@@ -78,6 +82,8 @@ definitions:
         type: integer
       is_success:
         type: boolean
+      page:
+        type: integer
       token:
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzU3MDM4NjQyfQ.J2MAUbAZvFpQl18BkSSyZOSMnbZxPziyZ6q6Bsuj8GU
         type: string
@@ -184,9 +190,42 @@ paths:
             $ref: '#/definitions/models.ErrorResponse'
       tags:
       - Register
-  /movies/upcoming:
+  /movies/filter/:search/:genres:
     get:
-      description: Get upcomes movies, filter movies that not aired yet
+      description: Get popular movies, filter movies already rated on every transaction
+      parameters:
+      - description: opsional query for pagination
+        in: query
+        name: page
+        type: integer
+      - description: opsional query for search title
+        in: query
+        name: search
+        type: string
+      - description: opsional query for filter genres
+        in: query
+        name: genres
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MoviesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - Movies
+  /movies/popular:
+    get:
+      description: Get popular movies, filter movies already rated on every transaction
       parameters:
       - description: opsional query for pagination
         in: query
@@ -208,5 +247,30 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       tags:
-      - movie
+      - Movies
+  /movies/upcoming:
+    get:
+      description: Get upcoming movies, filter movies that not aired yet
+      parameters:
+      - description: opsional query for pagination
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MoviesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - Movies
 swagger: "2.0"

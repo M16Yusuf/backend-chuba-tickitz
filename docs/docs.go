@@ -105,14 +105,104 @@ const docTemplate = `{
                 }
             }
         },
-        "/movies/upcoming": {
+        "/movies/filter/:search/:genres": {
             "get": {
-                "description": "Get upcomes movies, filter movies that not aired yet",
+                "description": "Get popular movies, filter movies already rated on every transaction",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "movie"
+                    "Movies"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "opsional query for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "opsional query for search title",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "description": "opsional query for filter genres",
+                        "name": "genres",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MoviesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/movies/popular": {
+            "get": {
+                "description": "Get popular movies, filter movies already rated on every transaction",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Movies"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "opsional query for pagination",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MoviesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/movies/upcoming": {
+            "get": {
+                "description": "Get upcoming movies, filter movies that not aired yet",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Movies"
                 ],
                 "parameters": [
                     {
@@ -193,6 +283,9 @@ const docTemplate = `{
                 },
                 "is_success": {
                     "type": "boolean"
+                },
+                "page": {
+                    "type": "integer"
                 }
             }
         },
@@ -273,6 +366,9 @@ const docTemplate = `{
                 },
                 "is_success": {
                     "type": "boolean"
+                },
+                "page": {
+                    "type": "integer"
                 }
             }
         },
@@ -284,6 +380,9 @@ const docTemplate = `{
                 },
                 "is_success": {
                     "type": "boolean"
+                },
+                "page": {
+                    "type": "integer"
                 },
                 "token": {
                     "type": "string",
