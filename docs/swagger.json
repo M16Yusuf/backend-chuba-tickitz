@@ -98,10 +98,11 @@
                 }
             }
         },
-        "/movies/filter/:search/:genres": {
+        "/movies/": {
             "get": {
                 "description": "Get popular movies, filter movies already rated on every transaction",
                 "produces": [
+                    "application/json",
                     "application/json"
                 ],
                 "tags": [
@@ -122,6 +123,10 @@
                     },
                     {
                         "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
                         "description": "opsional query for filter genres",
                         "name": "genres",
                         "in": "query"
@@ -210,6 +215,46 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.MoviesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/schedules/{movieid}": {
+            "get": {
+                "description": "Get schedules movie, for a movie",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "get schedule by this id movie",
+                        "name": "movieid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ScheduleResponse"
                         }
                     },
                     "400": {
@@ -356,6 +401,43 @@
                 },
                 "data": {
                     "$ref": "#/definitions/models.User"
+                },
+                "is_success": {
+                    "type": "boolean"
+                },
+                "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Schedule": {
+            "type": "object",
+            "properties": {
+                "movie_id": {
+                    "type": "integer"
+                },
+                "schedule": {
+                    "type": "string"
+                },
+                "schedule_id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ScheduleResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Schedule"
+                    }
                 },
                 "is_success": {
                     "type": "boolean"

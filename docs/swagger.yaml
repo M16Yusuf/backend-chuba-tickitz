@@ -76,6 +76,30 @@ definitions:
       page:
         type: integer
     type: object
+  models.Schedule:
+    properties:
+      movie_id:
+        type: integer
+      schedule:
+        type: string
+      schedule_id:
+        type: integer
+      title:
+        type: string
+    type: object
+  models.ScheduleResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/models.Schedule'
+        type: array
+      is_success:
+        type: boolean
+      page:
+        type: integer
+    type: object
   models.TokenResponse:
     properties:
       code:
@@ -190,7 +214,7 @@ paths:
             $ref: '#/definitions/models.ErrorResponse'
       tags:
       - Register
-  /movies/filter/:search/:genres:
+  /movies/:
     get:
       description: Get popular movies, filter movies already rated on every transaction
       parameters:
@@ -202,11 +226,15 @@ paths:
         in: query
         name: search
         type: string
-      - description: opsional query for filter genres
+      - collectionFormat: multi
+        description: opsional query for filter genres
         in: query
+        items:
+          type: string
         name: genres
         type: array
       produces:
+      - application/json
       - application/json
       responses:
         "200":
@@ -273,4 +301,30 @@ paths:
             $ref: '#/definitions/models.ErrorResponse'
       tags:
       - Movies
+  /schedules/{movieid}:
+    get:
+      description: Get schedules movie, for a movie
+      parameters:
+      - description: get schedule by this id movie
+        in: path
+        name: movieid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ScheduleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - Schedules
 swagger: "2.0"
