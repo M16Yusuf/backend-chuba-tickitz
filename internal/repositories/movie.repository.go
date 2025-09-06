@@ -55,6 +55,47 @@ func (m *MovieRepository) GetUpcoming(reqCntxt context.Context, offset, limit in
 
 		Movies = append(Movies, Movie)
 	}
-	log.Println(Movies)
+	return Movies, nil
+}
+
+// Function query for Popular movies
+// Popular, movie sorted by rating from transaction
+func (m *MovieRepository) GetPopular(reqCntxt context.Context, offset, limit int) ([]models.MovieList, error) {
+	sql := `SELECT m.id, m.poster_path, m.title, AVG(t.rating) AS avg_rating, COUNT(t.id) AS rating_count,
+		json_agg(DISTINCT jsonb_build_object('genre_id', g.id, 'genre_name', g.name)) AS genres
+		FROM movies m
+		JOIN transactions t ON m.id = t.movies_id
+		JOIN genres_movies gm ON m.id = gm.movie_id
+		JOIN genres g ON gm.genre_id = g.id
+		WHERE t.is_paid = true AND t.rating IS NOT NULL
+		GROUP BY m.id, m.poster_path, m.title
+		ORDER BY avg_rating DESC, rating_count DESC
+		LIMIT $2 OFFSET $1`
+
+	values := []any{offset, limit}
+	rows, err := m.db.Query(reqCntxt, sql, values...)
+	if err != nil {
+		log.Println("internal server error : ", err.Error())
+		return []models.MovieList{}, err
+	}
+	defer rows.Close()
+	// 	processing data / read rows
+	var Movies []models.MovieList
+	for rows.Next() {
+		var Movie models.MovieList
+		var genreRaw []byte
+		if err := rows.Scan(&Movie.Id, &Movie.Poster, &Movie.Title, &Movie.Release_date, &genreRaw); err != nil {
+			log.Println("Scan Error, ", err.Error())
+			return []models.MovieList{}, err
+		}
+
+		// Decode raw JSON into []Genre
+		if err := json.Unmarshal(genreRaw, &Movie.Genres); err != nil {
+			log.Println("Unmarshal Error:", err)
+			return nil, err
+		}
+
+		Movies = append(Movies, Movie)
+	}
 	return Movies, nil
 }

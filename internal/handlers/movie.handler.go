@@ -18,9 +18,9 @@ func NewMovieHandler(movRepo *repositories.MovieRepository) *MovieHandler {
 }
 
 // UpComing
-// @Tags 				movie
+// @Tags 				Movies
 // @Router 			/movies/upcoming [GET]
-// @Description Get upcomes movies, filter movies that not aired yet
+// @Description Get upcoming movies, filter movies that not aired yet
 // @Param				page	query		int 	false 	"opsional query for pagination"
 // @produce			json
 // @failure 		400		{object} 	models.ErrorResponse "Bad Request"
@@ -47,21 +47,81 @@ func (m *MovieHandler) UpcomingMovie(ctx *gin.Context) {
 		return
 	}
 
+	// validate if movies is return empty data
 	if len(movies) == 0 {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"success": false,
-			"data":    []any{},
-			"page":    page,
+		ctx.JSON(http.StatusNotFound, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: true,
+				Code:      404,
+				Page:      page,
+			},
+			Err: "Empty movie list",
 		})
 		return
 	}
 
+	// send data movies as response
 	ctx.JSON(http.StatusOK, models.MoviesResponse{
 		Response: models.Response{
 			IsSuccess: true,
 			Code:      200,
+			Page:      page,
 		},
 		Data: movies,
-		Page: page,
+	})
+}
+
+// Popular
+// @Tags 				Movies
+// @Router 			/movies/popular [GET]
+// @Description Get popular movies, filter movies already rated on every transaction
+// @Param				page	query		int 	false 	"opsional query for pagination"
+// @produce			json
+// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
+// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @success			200 	{object}	models.MoviesResponse
+func (m *MovieHandler) PopularMovie(ctx *gin.Context) {
+	// Make pagenation using query LIMIT dan OFFSET
+	page, err := strconv.Atoi(ctx.Query("page"))
+	if err != nil {
+		page = 1
+	}
+	limit := 20
+	offset := (page - 1) * limit
+
+	// call function query from repository to get popular movies
+	movies, err := m.movRepo.GetPopular(ctx.Request.Context(), offset, limit)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: err.Error(),
+		})
+		return
+	}
+
+	// validate if movies is return empty data
+	if len(movies) == 0 {
+		ctx.JSON(http.StatusNotFound, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: true,
+				Code:      404,
+				Page:      page,
+			},
+			Err: "Empty movie list",
+		})
+		return
+	}
+
+	// send data movies as response
+	ctx.JSON(http.StatusOK, models.MoviesResponse{
+		Response: models.Response{
+			IsSuccess: true,
+			Code:      200,
+			Page:      page,
+		},
+		Data: movies,
 	})
 }

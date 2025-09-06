@@ -13,4 +13,5 @@ func InitMovieRouter(router *gin.Engine, db *pgxpool.Pool) {
 	mh := handlers.NewMovieHandler(movieRepository)
 
 	movieRouter.GET("/upcoming", mh.UpcomingMovie)
+	movieRouter.GET("/popular", mh.PopularMovie)
 }
