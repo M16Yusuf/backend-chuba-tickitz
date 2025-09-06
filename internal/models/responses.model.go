@@ -3,6 +3,7 @@ package models
 type Response struct {
 	IsSuccess bool `json:"is_success"`
 	Code      int  `json:"code,omitempty"`
+	Page      int  `json:"page,omitempty"`
 }
 
 type ErrorResponse struct {
@@ -23,5 +24,4 @@ type ProfileResponse struct {
 type MoviesResponse struct {
 	Response
 	Data []MovieList
-	Page int `json:"page,omitempty"`
 }
