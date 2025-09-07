@@ -26,6 +26,7 @@ func InitRouter(db *pgxpool.Pool) *gin.Engine {
 	InitScheduleRouter(router, db)
 	InitSeatRouter(router, db)
 	InitUserRouter(router, db)
+	InitHistoryRouter(router, db)
 
 	router.NoRoute(handlers.NoRouteHandler)
 	return router
