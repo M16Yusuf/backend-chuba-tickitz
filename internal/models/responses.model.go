@@ -18,20 +18,25 @@ type TokenResponse struct {
 
 type ProfileResponse struct {
 	Response
-	Data User
+	Data User `json:"data"`
 }
 
 type MoviesResponse struct {
 	Response
-	Data []MovieList
+	Data []MovieList `json:"data"`
 }
 
 type ScheduleResponse struct {
 	Response
-	Data []Schedule
+	Data []Schedule `json:"data"`
 }
 
 type SeatResponse struct {
 	Response
-	Data []BookedSeatBySchedule
+	Data []BookedSeatBySchedule `json:"data"`
+}
+
+type DetailsMovieResponse struct {
+	Response
+	Data MovieDetails `json:"data"`
 }

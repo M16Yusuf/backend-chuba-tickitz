@@ -15,5 +15,12 @@ type Movie struct {
 
 type MovieList struct {
 	Movie
-	Genres []Genre
+	Genres []Genre `json:"genres"`
+}
+
+type MovieDetails struct {
+	Movie
+	Genres   []Genre `json:"genres"`
+	Actors   []Actor `json:"actors"`
+	Director Director
 }
