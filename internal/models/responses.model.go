@@ -40,3 +40,8 @@ type DetailsMovieResponse struct {
 	Response
 	Data MovieDetails `json:"data"`
 }
+
+type UserDetailResponse struct {
+	Response
+	Data User `json:"data"`
+}

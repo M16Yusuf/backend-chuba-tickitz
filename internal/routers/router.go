@@ -25,6 +25,7 @@ func InitRouter(db *pgxpool.Pool) *gin.Engine {
 	InitMovieRouter(router, db)
 	InitScheduleRouter(router, db)
 	InitSeatRouter(router, db)
+	InitUserRouter(router, db)
 
 	router.NoRoute(handlers.NoRouteHandler)
 	return router
