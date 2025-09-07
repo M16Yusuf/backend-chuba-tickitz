@@ -129,7 +129,7 @@ func (m *MovieHandler) PopularMovie(ctx *gin.Context) {
 // Filter Search and genres
 // @Tags 				Movies
 // @Router 			/movies/ [GET]
-// @Description Get popular movies, filter movies already rated on every transaction
+// @Description Get popular movies, filter movies by title or genres
 // @Param				page		query		int 		 false 	"opsional query for pagination"
 // @Param				search	query		string 	 false 	"opsional query for search title"
 // @Param				genres	query		[]string false 	"opsional query for filter genres" collectionFormat(multi)
@@ -137,7 +137,7 @@ func (m *MovieHandler) PopularMovie(ctx *gin.Context) {
 // @produce			json
 // @failure 		400			{object} 	models.ErrorResponse "Bad Request"
 // @failure 		500 		{object} 	models.ErrorResponse "Internal Server Error"
-// @success			200 		{object}	models.MoviesResponse
+// @success			200 		{object}	models.DetailsMovieResponse
 func (m *MovieHandler) FilterMovie(ctx *gin.Context) {
 	// Make pagenation using query LIMIT dan OFFSET
 	page, err := strconv.Atoi(ctx.Query("page"))
@@ -185,5 +185,38 @@ func (m *MovieHandler) FilterMovie(ctx *gin.Context) {
 			Page:      page,
 		},
 		Data: movies,
+	})
+}
+
+// Get Movie details
+// @Tags Movies
+// @Router	/movies/{movie_id} [GET]
+// @Description Get details movies, get data by known an id movie
+// @Param		movie_id	path  string	true "get detail movie by id movie"
+// @produce			json
+// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
+// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @success			200 	{object}	models.ScheduleResponse
+func (m *MovieHandler) GetDetailMovie(ctx *gin.Context) {
+	movieID := ctx.Param("movie_id")
+	movieDetails, err := m.movRepo.GetMovieDetails(ctx.Request.Context(), movieID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: err.Error(),
+		})
+		return
+	}
+
+	// send data details a movie as response
+	ctx.JSON(http.StatusOK, models.DetailsMovieResponse{
+		Response: models.Response{
+			IsSuccess: true,
+			Code:      200,
+		},
+		Data: movieDetails,
 	})
 }
