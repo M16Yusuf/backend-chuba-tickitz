@@ -45,3 +45,8 @@ type UserDetailResponse struct {
 	Response
 	Data User `json:"data"`
 }
+
+type HistoiesResponse struct {
+	Response
+	Data []History `json:"data"`
+}
