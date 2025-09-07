@@ -16,6 +16,15 @@ func NewSeatHandler(seatRepo *repositories.SeatRepository) *SeatHandler {
 	return &SeatHandler{seatRepo: seatRepo}
 }
 
+// Booked seat
+// @Tags 				Seats
+// @Router 			/seats/{schedule_id}  [GET]
+// @Description Get seat that booked  from a movie get by schedule id
+// @Param				schedule_id  path		string 	true 	"get booked seat by this schedule id"
+// @produce			json
+// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
+// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @success			200 	{object}	models.SeatResponse
 func (s *SeatHandler) GetBookedSeat(ctx *gin.Context) {
 	// get schedule id
 	scheduleID := ctx.Query("schedule_id")
