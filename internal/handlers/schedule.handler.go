@@ -21,6 +21,7 @@ func NewScheduleHandler(sr *repositories.ScheduleRepository) *ScheduleHandler {
 // @Router 			/schedules/{movieid} [GET]
 // @Description Get schedules movie, for a movie
 // @Param				movieid	path	string 	true 	"get schedule by this id movie"
+// @Param 			Authorization header string true "Bearer token"
 // @produce			json
 // @failure 		400		{object} 	models.ErrorResponse "Bad Request"
 // @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
