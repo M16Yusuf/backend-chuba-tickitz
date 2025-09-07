@@ -30,3 +30,8 @@ type ScheduleResponse struct {
 	Response
 	Data []Schedule
 }
+
+type SeatResponse struct {
+	Response
+	Data []BookedSeatBySchedule
+}
