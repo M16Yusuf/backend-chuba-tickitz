@@ -98,9 +98,56 @@
                 }
             }
         },
+        "/histories/{user_id}": {
+            "get": {
+                "description": "Get all list histories from a user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Histories"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "get all list histories, by user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.HistoiesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/movies/": {
             "get": {
-                "description": "Get popular movies, filter movies already rated on every transaction",
+                "description": "Get popular movies, filter movies by title or genres",
                 "produces": [
                     "application/json",
                     "application/json"
@@ -136,7 +183,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.MoviesResponse"
+                            "$ref": "#/definitions/models.DetailsMovieResponse"
                         }
                     },
                     "400": {
@@ -232,6 +279,46 @@
                 }
             }
         },
+        "/movies/{movie_id}": {
+            "get": {
+                "description": "Get details movies, get data by known an id movie",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Movies"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "get detail movie by id movie",
+                        "name": "movie_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ScheduleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/schedules/{movieid}": {
             "get": {
                 "description": "Get schedules movie, for a movie",
@@ -248,6 +335,13 @@
                         "name": "movieid",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -255,6 +349,149 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.ScheduleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/seats/{schedule_id}": {
+            "get": {
+                "description": "Get seat that booked  from a movie get by schedule id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Seats"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "get booked seat by this schedule id",
+                        "name": "schedule_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SeatResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/update/{user_id}": {
+            "post": {
+                "description": "Update user and show new updated data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "get user_id for select which user will update",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Data film",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ProfileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{user_id}": {
+            "get": {
+                "description": "Get details user, gt data by known id user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "get detail movie by id movie",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserDetailResponse"
                         }
                     },
                     "400": {
@@ -293,6 +530,17 @@
         }
     },
     "definitions": {
+        "models.Actor": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Auth": {
             "type": "object",
             "required": [
@@ -306,6 +554,79 @@
                 "password": {
                     "type": "string",
                     "minLength": 8
+                }
+            }
+        },
+        "models.BookedSeatBySchedule": {
+            "type": "object",
+            "properties": {
+                "paid_at": {
+                    "type": "string"
+                },
+                "schedule": {
+                    "type": "string"
+                },
+                "schedule_id": {
+                    "type": "integer"
+                },
+                "seat_code": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "transaction_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Cinema": {
+            "type": "object",
+            "properties": {
+                "cinema_id": {
+                    "type": "integer"
+                },
+                "cinema_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.City": {
+            "type": "object",
+            "properties": {
+                "city_id": {
+                    "type": "integer"
+                },
+                "city_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.DetailsMovieResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/models.MovieDetails"
+                },
+                "is_success": {
+                    "type": "boolean"
+                },
+                "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Director": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -334,6 +655,158 @@
                     "type": "integer"
                 },
                 "genre_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.HistoiesResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.History"
+                    }
+                },
+                "is_success": {
+                    "type": "boolean"
+                },
+                "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.History": {
+            "type": "object",
+            "properties": {
+                "cinema": {
+                    "$ref": "#/definitions/models.Cinema"
+                },
+                "cinema_id": {
+                    "type": "integer"
+                },
+                "city": {
+                    "$ref": "#/definitions/models.City"
+                },
+                "city_id": {
+                    "type": "integer"
+                },
+                "code_ticket": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "number"
+                },
+                "movie": {
+                    "$ref": "#/definitions/models.Movie"
+                },
+                "movie_id": {
+                    "type": "integer"
+                },
+                "paid_at": {
+                    "type": "string"
+                },
+                "payment": {
+                    "$ref": "#/definitions/models.Payment"
+                },
+                "payment_id": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "schedule": {
+                    "$ref": "#/definitions/models.Schedule"
+                },
+                "schedule_id": {
+                    "type": "integer"
+                },
+                "seat": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Seat"
+                    }
+                },
+                "total": {
+                    "type": "number"
+                },
+                "transaction_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Movie": {
+            "type": "object",
+            "properties": {
+                "backdrop_path": {
+                    "type": "string"
+                },
+                "director_id": {
+                    "type": "integer"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "movie_id": {
+                    "type": "integer"
+                },
+                "overview": {
+                    "type": "string"
+                },
+                "poster_path": {
+                    "type": "string"
+                },
+                "release_date": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.MovieDetails": {
+            "type": "object",
+            "properties": {
+                "actors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Actor"
+                    }
+                },
+                "backdrop_path": {
+                    "type": "string"
+                },
+                "director": {
+                    "$ref": "#/definitions/models.Director"
+                },
+                "director_id": {
+                    "type": "integer"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "genres": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Genre"
+                    }
+                },
+                "movie_id": {
+                    "type": "integer"
+                },
+                "overview": {
+                    "type": "string"
+                },
+                "poster_path": {
+                    "type": "string"
+                },
+                "release_date": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 }
             }
@@ -393,6 +866,17 @@
                 }
             }
         },
+        "models.Payment": {
+            "type": "object",
+            "properties": {
+                "payment_id": {
+                    "type": "integer"
+                },
+                "payment_method": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ProfileResponse": {
             "type": "object",
             "properties": {
@@ -437,6 +921,37 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Schedule"
+                    }
+                },
+                "is_success": {
+                    "type": "boolean"
+                },
+                "page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Seat": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "seat_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.SeatResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.BookedSeatBySchedule"
                     }
                 },
                 "is_success": {
@@ -496,6 +1011,23 @@
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.UserDetailResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "is_success": {
+                    "type": "boolean"
+                },
+                "page": {
                     "type": "integer"
                 }
             }
