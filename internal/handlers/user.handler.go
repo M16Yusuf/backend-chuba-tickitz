@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/models"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/repositories"
+	"github.com/m16yusuf/backend-chuba-tickitz/pkg"
 )
 
 type UserHandler struct {
@@ -47,5 +49,72 @@ func (u *UserHandler) GetUserByID(ctx *gin.Context) {
 			Code:      200,
 		},
 		Data: user,
+	})
+}
+
+// Update User
+// @Tags Profile
+// @Router 			/users/update/{user_id}  [POST]
+// @Description Update user and show new updated data
+// @Param		user_id				path  	string			true "get user_id for select which user will update"
+// @Param 	Authorization header 	string 			true "Bearer token"
+// @Param 	body 					body 		models.User true "Data new user"
+// @produce			json
+// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
+// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @success			200 	{object}	models.ProfileResponse
+func (u *UserHandler) UpdateUser(ctx *gin.Context) {
+	var body models.User
+	if err := ctx.ShouldBind(&body); err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: err.Error(),
+		})
+		return
+	}
+
+	userID := ctx.Param("user_id")
+	// hashing new password
+	if body.Password != "" {
+		hc := pkg.NewHashConfig()
+		hc.UseRecommended()
+		hash, err := hc.GenHash(body.Password)
+		if err != nil {
+			log.Println("Failed hashing password, \nCause: ", err)
+			ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+				Response: models.Response{
+					IsSuccess: false,
+					Code:      500,
+				},
+				Err: err.Error(),
+			})
+			return
+		}
+		body.Password = hash
+	}
+
+	newProfile, err := u.ur.EditUser(ctx.Request.Context(), body, userID)
+	if err != nil {
+		log.Println("Failed function editUser, \nCause: ", err)
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: err.Error(),
+		})
+		return
+	}
+
+	// return new updated user as response
+	ctx.JSON(http.StatusOK, models.ProfileResponse{
+		Response: models.Response{
+			IsSuccess: true,
+			Code:      200,
+		},
+		Data: newProfile,
 	})
 }
