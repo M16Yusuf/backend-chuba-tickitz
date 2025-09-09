@@ -130,7 +130,7 @@ func (m *MovieHandler) PopularMovie(ctx *gin.Context) {
 
 // Filter Search and genres
 // @Tags 				Movies
-// @Router 			/movies/ [GET]
+// @Router 			/movies [GET]
 // @Summary 		filter movies by genres, title and pagination
 // @Description Get popular movies, filter movies by title or genres
 // @Param				page		query		int 		 false 	"opsional query for pagination"

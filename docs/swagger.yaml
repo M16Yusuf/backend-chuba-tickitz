@@ -313,6 +313,8 @@ definitions:
         type: string
       role:
         type: string
+      updated_at:
+        type: string
       user_id:
         type: integer
     type: object
@@ -344,6 +346,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      summary: testing display for no route
       tags:
       - NoRoute
   /auth:
@@ -374,6 +377,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      summary: Login registered user
       tags:
       - login
   /auth/register:
@@ -404,22 +408,12 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      summary: Register new user
       tags:
       - Register
-  /histories/{user_id}:
+  /histories:
     get:
       description: Get all list histories from a user
-      parameters:
-      - description: get all list histories, by user id
-        in: path
-        name: user_id
-        required: true
-        type: string
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -435,9 +429,12 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Get histories user
       tags:
       - Histories
-  /movies/:
+  /movies:
     get:
       description: Get popular movies, filter movies by title or genres
       parameters:
@@ -472,6 +469,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      summary: filter movies by genres, title and pagination
       tags:
       - Movies
   /movies/{movie_id}:
@@ -498,6 +496,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      summary: Get details from a movie
       tags:
       - Movies
   /movies/popular:
@@ -523,6 +522,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      summary: Get popular movies
       tags:
       - Movies
   /movies/upcoming:
@@ -548,6 +548,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      summary: Get upciming movies
       tags:
       - Movies
   /schedules/{movieid}:
@@ -557,11 +558,6 @@ paths:
       - description: get schedule by this id movie
         in: path
         name: movieid
-        required: true
-        type: string
-      - description: Bearer token
-        in: header
-        name: Authorization
         required: true
         type: string
       produces:
@@ -579,6 +575,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Get schedule for a movie
       tags:
       - Schedules
   /seats/{schedule_id}:
@@ -605,22 +604,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Get Booked seat
       tags:
       - Seats
-  /users/{user_id}:
+  /users/:
     get:
       description: Get details user, gt data by known id user
-      parameters:
-      - description: get detail movie by id movie
-        in: path
-        name: user_id
-        required: true
-        type: string
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -636,23 +627,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: get profile user
       tags:
       - Profile
-  /users/update/{user_id}:
-    post:
+    patch:
       description: Update user and show new updated data
       parameters:
-      - description: get user_id for select which user will update
-        in: path
-        name: user_id
-        required: true
-        type: string
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Data film
+      - description: Data new user
         in: body
         name: body
         required: true
@@ -673,6 +656,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Update registerd user
       tags:
       - Profile
+securityDefinitions:
+  JWTtoken:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

@@ -27,6 +27,7 @@ const docTemplate = `{
                 "tags": [
                     "login"
                 ],
+                "summary": "Login registered user",
                 "parameters": [
                     {
                         "description": "Input email and password",
@@ -72,6 +73,7 @@ const docTemplate = `{
                 "tags": [
                     "Register"
                 ],
+                "summary": "Register new user",
                 "parameters": [
                     {
                         "description": "Input email and password new user",
@@ -105,8 +107,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/histories/{user_id}": {
+        "/histories": {
             "get": {
+                "security": [
+                    {
+                        "JWTtoken": []
+                    }
+                ],
                 "description": "Get all list histories from a user",
                 "produces": [
                     "application/json"
@@ -114,22 +121,7 @@ const docTemplate = `{
                 "tags": [
                     "Histories"
                 ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "get all list histories, by user id",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
+                "summary": "Get histories user",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -152,7 +144,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/movies/": {
+        "/movies": {
             "get": {
                 "description": "Get popular movies, filter movies by title or genres",
                 "produces": [
@@ -162,6 +154,7 @@ const docTemplate = `{
                 "tags": [
                     "Movies"
                 ],
+                "summary": "filter movies by genres, title and pagination",
                 "parameters": [
                     {
                         "type": "integer",
@@ -217,6 +210,7 @@ const docTemplate = `{
                 "tags": [
                     "Movies"
                 ],
+                "summary": "Get popular movies",
                 "parameters": [
                     {
                         "type": "integer",
@@ -256,6 +250,7 @@ const docTemplate = `{
                 "tags": [
                     "Movies"
                 ],
+                "summary": "Get upciming movies",
                 "parameters": [
                     {
                         "type": "integer",
@@ -295,6 +290,7 @@ const docTemplate = `{
                 "tags": [
                     "Movies"
                 ],
+                "summary": "Get details from a movie",
                 "parameters": [
                     {
                         "type": "string",
@@ -328,6 +324,11 @@ const docTemplate = `{
         },
         "/schedules/{movieid}": {
             "get": {
+                "security": [
+                    {
+                        "JWTtoken": []
+                    }
+                ],
                 "description": "Get schedules movie, for a movie",
                 "produces": [
                     "application/json"
@@ -335,19 +336,13 @@ const docTemplate = `{
                 "tags": [
                     "Schedules"
                 ],
+                "summary": "Get schedule for a movie",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "get schedule by this id movie",
                         "name": "movieid",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
                         "required": true
                     }
                 ],
@@ -375,6 +370,11 @@ const docTemplate = `{
         },
         "/seats/{schedule_id}": {
             "get": {
+                "security": [
+                    {
+                        "JWTtoken": []
+                    }
+                ],
                 "description": "Get seat that booked  from a movie get by schedule id",
                 "produces": [
                     "application/json"
@@ -382,6 +382,7 @@ const docTemplate = `{
                 "tags": [
                     "Seats"
                 ],
+                "summary": "Get Booked seat",
                 "parameters": [
                     {
                         "type": "string",
@@ -413,8 +414,48 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/update/{user_id}": {
-            "post": {
+        "/users/": {
+            "get": {
+                "security": [
+                    {
+                        "JWTtoken": []
+                    }
+                ],
+                "description": "Get details user, gt data by known id user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "get profile user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserDetailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "JWTtoken": []
+                    }
+                ],
                 "description": "Update user and show new updated data",
                 "produces": [
                     "application/json"
@@ -422,23 +463,10 @@ const docTemplate = `{
                 "tags": [
                     "Profile"
                 ],
+                "summary": "Update registerd user",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "get user_id for select which user will update",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "Data film",
+                        "description": "Data new user",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -469,53 +497,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{user_id}": {
-            "get": {
-                "description": "Get details user, gt data by known id user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Profile"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "get detail movie by id movie",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.UserDetailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/{any}": {
             "get": {
                 "description": "if route not found, send 404 statusNotfound as response",
@@ -525,6 +506,7 @@ const docTemplate = `{
                 "tags": [
                     "NoRoute"
                 ],
+                "summary": "testing display for no route",
                 "responses": {
                     "404": {
                         "description": "Not Found",
@@ -1017,6 +999,9 @@ const docTemplate = `{
                 "role": {
                     "type": "string"
                 },
+                "updated_at": {
+                    "type": "string"
+                },
                 "user_id": {
                     "type": "integer"
                 }
@@ -1038,6 +1023,13 @@ const docTemplate = `{
                     "type": "integer"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "JWTtoken": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
