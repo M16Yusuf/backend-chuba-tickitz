@@ -22,6 +22,7 @@ func NewSeatHandler(seatRepo *repositories.SeatRepository) *SeatHandler {
 // @Summary 		Get Booked seat
 // @Description Get seat that booked  from a movie get by schedule id
 // @Param				schedule_id  path		string 	true 	"get booked seat by this schedule id"
+// @Security 		JWTtoken
 // @produce			json
 // @failure 		400		{object} 	models.ErrorResponse "Bad Request"
 // @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/handlers"
+	"github.com/m16yusuf/backend-chuba-tickitz/internal/middleware"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/repositories"
 )
 
@@ -12,5 +13,5 @@ func InitSeatRouter(router *gin.Engine, db *pgxpool.Pool) {
 	seatRepository := repositories.NewSeatRepository(db)
 	sh := handlers.NewSeatHandler(seatRepository)
 
-	seatRouter.GET("/:schedule_id", sh.GetBookedSeat)
+	seatRouter.GET("/:schedule_id", middleware.VerifyToken, middleware.Access("user", "admin"), sh.GetBookedSeat)
 }
