@@ -8,10 +8,13 @@ import (
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/routers"
 )
 
-// @title 				CHUBA TICKITZ
-// @version 			1.0
-// @description 	Ticketing application with restful API powered by gin
-// @host 					127.0.0.1:8080
+// @title 											CHUBA TICKITZ
+// @version 										1.0
+// @description 								Ticketing application with restful API powered by gin
+// @host 												127.0.0.1:8080
+// @securityDefinitions.apikey 	JWTtoken
+// @in header
+// @name Authorization
 func main() {
 	// manual load ENV
 	if err := godotenv.Load(); err != nil {
