@@ -20,6 +20,7 @@ func NewMovieHandler(movRepo *repositories.MovieRepository) *MovieHandler {
 // UpComing
 // @Tags 				Movies
 // @Router 			/movies/upcoming [GET]
+// @Summary 		Get upciming movies
 // @Description Get upcoming movies, filter movies that not aired yet
 // @Param				page	query		int 	false 	"opsional query for pagination"
 // @produce			json
@@ -74,6 +75,7 @@ func (m *MovieHandler) UpcomingMovie(ctx *gin.Context) {
 // Popular
 // @Tags 				Movies
 // @Router 			/movies/popular [GET]
+// @Summary 		Get popular movies
 // @Description Get popular movies, filter movies already rated on every transaction
 // @Param				page	query		int 	false 	"opsional query for pagination"
 // @produce			json
@@ -129,6 +131,7 @@ func (m *MovieHandler) PopularMovie(ctx *gin.Context) {
 // Filter Search and genres
 // @Tags 				Movies
 // @Router 			/movies/ [GET]
+// @Summary 		filter movies by genres, title and pagination
 // @Description Get popular movies, filter movies by title or genres
 // @Param				page		query		int 		 false 	"opsional query for pagination"
 // @Param				search	query		string 	 false 	"opsional query for search title"
@@ -190,13 +193,14 @@ func (m *MovieHandler) FilterMovie(ctx *gin.Context) {
 
 // Get Movie details
 // @Tags Movies
-// @Router	/movies/{movie_id} [GET]
+// @Router			/movies/{movie_id} [GET]
+// @Summary 		Get details from a movie
 // @Description Get details movies, get data by known an id movie
-// @Param		movie_id	path  string	true "get detail movie by id movie"
+// @Param				movie_id	path  string	true "get detail movie by id movie"
 // @produce			json
-// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
-// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
-// @success			200 	{object}	models.ScheduleResponse
+// @failure 		400				{object} 	models.ErrorResponse "Bad Request"
+// @failure 		500 			{object} 	models.ErrorResponse "Internal Server Error"
+// @success			200 			{object}	models.ScheduleResponse
 func (m *MovieHandler) GetDetailMovie(ctx *gin.Context) {
 	movieID := ctx.Param("movie_id")
 	movieDetails, err := m.movRepo.GetMovieDetails(ctx.Request.Context(), movieID)

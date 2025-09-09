@@ -19,6 +19,7 @@ func NewSeatHandler(seatRepo *repositories.SeatRepository) *SeatHandler {
 // Booked seat
 // @Tags 				Seats
 // @Router 			/seats/{schedule_id}  [GET]
+// @Summary 		Get Booked seat
 // @Description Get seat that booked  from a movie get by schedule id
 // @Param				schedule_id  path		string 	true 	"get booked seat by this schedule id"
 // @produce			json

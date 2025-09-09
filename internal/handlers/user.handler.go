@@ -21,13 +21,14 @@ func NewUserHandler(ur *repositories.UserRepository) *UserHandler {
 // Get User
 // @Tags Profile
 // @Router 			/users/{user_id}  [GET]
+// @Summary 		get profile user
 // @Description Get details user, gt data by known id user
-// @Param			user_id	path  		string	true 				 "get detail movie by id movie"
-// @Param 		Authorization 		header 	string true  "Bearer token"
-// @produce		json
-// @failure 	400			{object} 	models.ErrorResponse "Bad Request"
-// @failure 	500 		{object} 	models.ErrorResponse "Internal Server Error"
-// @success		200 		{object}	models.UserDetailResponse
+// @Param				user_id	path  		string	true 				 "get detail movie by id movie"
+// @Param 			Authorization 		header 	string true  "Bearer token"
+// @produce			json
+// @failure 		400			{object} 	models.ErrorResponse "Bad Request"
+// @failure 		500 		{object} 	models.ErrorResponse "Internal Server Error"
+// @success			200 		{object}	models.UserDetailResponse
 func (u *UserHandler) GetUserByID(ctx *gin.Context) {
 	userID := ctx.Param("user_id")
 	user, err := u.ur.GetDataUser(ctx.Request.Context(), userID)
@@ -54,11 +55,12 @@ func (u *UserHandler) GetUserByID(ctx *gin.Context) {
 
 // Update User
 // @Tags Profile
-// @Router 			/users/update/{user_id}  [POST]
+// @Router 			/users/{user_id}  [PATCH]
+// @Summary 		Update registerd user
 // @Description Update user and show new updated data
-// @Param		user_id				path  	string			true "get user_id for select which user will update"
-// @Param 	Authorization header 	string 			true "Bearer token"
-// @Param 	body 					body 		models.User true "Data new user"
+// @Param				user_id					path  	string			true "get user_id for select which user will update"
+// @Param 			Authorization 	header 	string 			true "Bearer token"
+// @Param 			body 	body 			models.User true "Data new user"
 // @produce			json
 // @failure 		400		{object} 	models.ErrorResponse "Bad Request"
 // @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"

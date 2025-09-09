@@ -24,6 +24,7 @@ func NewAuthHandler(ar *repositories.AuthRepository) *AuthHandler {
 // Login
 // @tags 				login
 // @router 	 		/auth 	[POST]
+// @Summary 		Login registered user
 // @Description login using email and password and return as response with JWT token
 // @Param 			body		body		 models.Auth true 		"Input email and password"
 // @accept 			json
@@ -147,6 +148,7 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 // Register
 // @Tags					Register
 // @Router			/auth/register [post]
+// @Summary 		Register new user
 // @Description	Register new user input email and password and return new data users
 // @Param				body		body 		 models.Auth 	true		"Input email and password new user"
 // @accept			json

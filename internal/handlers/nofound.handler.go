@@ -9,6 +9,7 @@ import (
 
 // NoRouteHandler
 // @Tags NoRoute
+// @Summary 		testing display for no route
 // @Description if route not found, send 404 statusNotfound as response
 // @Produce json
 // @Router /{any} [get]

@@ -19,6 +19,7 @@ func NewScheduleHandler(sr *repositories.ScheduleRepository) *ScheduleHandler {
 // Schedule
 // @Tags 				Schedules
 // @Router 			/schedules/{movieid} [GET]
+// @Summary 		Get schedule for a movie
 // @Description Get schedules movie, for a movie
 // @Param				movieid	path	string 	true 	"get schedule by this id movie"
 // @Param 			Authorization header string true "Bearer token"

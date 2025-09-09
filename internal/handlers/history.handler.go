@@ -19,6 +19,7 @@ func NewHistoryHandler(hisRep *repositories.HistoryRepository) *HistoryHandler {
 // History
 // @Tags	Histories
 // @Router 			/histories/{user_id} [GET]
+// @Summary 		Get histories user
 // @Description Get all list histories from a user
 // @Param				user_id	path	string 	true 	"get all list histories, by user id"
 // @Param 			Authorization header string true "Bearer token"
