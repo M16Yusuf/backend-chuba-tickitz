@@ -20,17 +20,40 @@ func NewUserHandler(ur *repositories.UserRepository) *UserHandler {
 
 // Get User
 // @Tags Profile
-// @Router 			/users/{user_id}  [GET]
+// @Router 			/users/  [GET]
 // @Summary 		get profile user
 // @Description Get details user, gt data by known id user
-// @Param				user_id	path  		string	true 				 "get detail movie by id movie"
-// @Param 			Authorization 		header 	string true  "Bearer token"
+// @Security 		JWTtoken
 // @produce			json
 // @failure 		400			{object} 	models.ErrorResponse "Bad Request"
 // @failure 		500 		{object} 	models.ErrorResponse "Internal Server Error"
 // @success			200 		{object}	models.UserDetailResponse
 func (u *UserHandler) GetUserByID(ctx *gin.Context) {
-	userID := ctx.Param("user_id")
+	// get user_id by parsing jwt token
+	claims, isExist := ctx.Get("claims")
+	if !isExist {
+		ctx.AbortWithStatusJSON(http.StatusForbidden, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      403,
+			},
+			Err: "Silahkan login kembali",
+		})
+		return
+	}
+
+	userClaim, ok := claims.(pkg.Claims)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: "Internal server serror",
+		})
+	}
+
+	userID := userClaim.UserId
 	user, err := u.ur.GetDataUser(ctx.Request.Context(), userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
@@ -55,17 +78,17 @@ func (u *UserHandler) GetUserByID(ctx *gin.Context) {
 
 // Update User
 // @Tags Profile
-// @Router 			/users/{user_id}  [PATCH]
+// @Router 			/users/  [PATCH]
 // @Summary 		Update registerd user
 // @Description Update user and show new updated data
-// @Param				user_id					path  	string			true "get user_id for select which user will update"
-// @Param 			Authorization 	header 	string 			true "Bearer token"
 // @Param 			body 	body 			models.User true "Data new user"
+// @Security 		JWTtoken
 // @produce			json
 // @failure 		400		{object} 	models.ErrorResponse "Bad Request"
 // @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
 // @success			200 	{object}	models.ProfileResponse
 func (u *UserHandler) UpdateUser(ctx *gin.Context) {
+	// binding body to model user
 	var body models.User
 	if err := ctx.ShouldBind(&body); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
@@ -78,7 +101,31 @@ func (u *UserHandler) UpdateUser(ctx *gin.Context) {
 		return
 	}
 
-	userID := ctx.Param("user_id")
+	// get user_id by parsing jwt token
+	claims, isExist := ctx.Get("claims")
+	if !isExist {
+		ctx.AbortWithStatusJSON(http.StatusForbidden, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      403,
+			},
+			Err: "Silahkan login kembali",
+		})
+		return
+	}
+
+	userClaim, ok := claims.(pkg.Claims)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: "Internal server serror",
+		})
+	}
+	userID := userClaim.UserId
+
 	// hashing new password
 	if body.Password != "" {
 		hc := pkg.NewHashConfig()

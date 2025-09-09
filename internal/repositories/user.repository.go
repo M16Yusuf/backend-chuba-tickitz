@@ -18,12 +18,12 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 }
 
 // get data user
-func (u *UserRepository) GetDataUser(reqCntxt context.Context, userid string) (models.User, error) {
-	sql := `SELECT id, first_name, last_name, avatar_path, email, phone_number, password, point, gender, updated_at
+func (u *UserRepository) GetDataUser(reqCntxt context.Context, userid int) (models.User, error) {
+	sql := `SELECT id, first_name, last_name, avatar_path, email, phone_number, point, gender, updated_at
   	FROM users where id = $1 `
 
 	var user models.User
-	err := u.db.QueryRow(reqCntxt, sql, userid).Scan(&user.Id, &user.FirstName, &user.LastName, &user.AvatarPath, &user.Email, &user.Phone, &user.Password, &user.Point, &user.Gender, &user.UpdatedAt)
+	err := u.db.QueryRow(reqCntxt, sql, userid).Scan(&user.Id, &user.FirstName, &user.LastName, &user.AvatarPath, &user.Email, &user.Phone, &user.Point, &user.Gender, &user.UpdatedAt)
 	if err != nil {
 		log.Println("Error when select, \nCause: ", err)
 		return models.User{}, err
@@ -33,7 +33,7 @@ func (u *UserRepository) GetDataUser(reqCntxt context.Context, userid string) (m
 }
 
 // edit user
-func (u *UserRepository) EditUser(reqCntxt context.Context, body models.User, userID string) (models.User, error) {
+func (u *UserRepository) EditUser(reqCntxt context.Context, body models.User, userID int) (models.User, error) {
 	// query and validation which column will update
 	values := []any{}
 	sql := `UPDATE users SET `
@@ -57,12 +57,12 @@ func (u *UserRepository) EditUser(reqCntxt context.Context, body models.User, us
 		sql += "gender=$" + idx + " ,"
 		values = append(values, body.Gender)
 	}
-	if body.Phone != "" {
+	if body.Phone != nil {
 		idx := strconv.Itoa(len(values) + 1)
 		sql += "phone_number=$" + idx + " ,"
 		values = append(values, body.Phone)
 	}
-	if body.AvatarPath != "" {
+	if body.AvatarPath != nil {
 		idx := strconv.Itoa(len(values) + 1)
 		sql += "avatar_path=$" + idx + " ,"
 		values = append(values, body.AvatarPath)
