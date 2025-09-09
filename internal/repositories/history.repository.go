@@ -17,7 +17,7 @@ func NewHistoryRepository(db *pgxpool.Pool) *HistoryRepository {
 	return &HistoryRepository{db: db}
 }
 
-func (h *HistoryRepository) GetHistory(reqContxt context.Context, userID string) ([]models.History, error) {
+func (h *HistoryRepository) GetHistory(reqContxt context.Context, userID int) ([]models.History, error) {
 	sql := `SELECT t.id, t.code_ticket, t.paid_at, t.total_price, t.created_at, t.rating, 
 		m.title AS movie_title, sch.schedule AS schedule_time, p.method AS payment_method,
 		c.name AS cinema_name, ci.name AS city_name, ARRAY_AGG(s.code) AS seat_codes

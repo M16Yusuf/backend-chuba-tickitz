@@ -13,5 +13,5 @@ func InitHistoryRouter(router *gin.Engine, db *pgxpool.Pool) {
 	historyRepository := repositories.NewHistoryRepository(db)
 	hh := handlers.NewHistoryHandler(historyRepository)
 
-	historyRouter.GET("/:user_id", middleware.VerifyToken, middleware.Access("user", "admin"), hh.GetHistory)
+	historyRouter.GET("", middleware.VerifyToken, middleware.Access("user", "admin"), hh.GetHistory)
 }

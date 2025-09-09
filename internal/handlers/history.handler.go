@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/models"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/repositories"
+	"github.com/m16yusuf/backend-chuba-tickitz/pkg"
 )
 
 type HistoryHandler struct {
@@ -18,17 +19,40 @@ func NewHistoryHandler(hisRep *repositories.HistoryRepository) *HistoryHandler {
 
 // History
 // @Tags	Histories
-// @Router 			/histories/{user_id} [GET]
+// @Router 			/histories [GET]
 // @Summary 		Get histories user
 // @Description Get all list histories from a user
-// @Param				user_id	path	string 	true 	"get all list histories, by user id"
-// @Param 			Authorization header string true "Bearer token"
+// @Security 		JWTtoken
 // @produce			json
 // @failure 		400		{object} 	models.ErrorResponse "Bad Request"
 // @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
 // @success			200 	{object}	models.HistoiesResponse
 func (h *HistoryHandler) GetHistory(ctx *gin.Context) {
-	userID := ctx.Param("user_id")
+	// get user_id by parsing jwt token
+	claims, isExist := ctx.Get("claims")
+	if !isExist {
+		ctx.AbortWithStatusJSON(http.StatusForbidden, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      403,
+			},
+			Err: "Silahkan login kembali",
+		})
+		return
+	}
+
+	userClaim, ok := claims.(pkg.Claims)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: "Internal server serror",
+		})
+	}
+
+	userID := userClaim.UserId
 	histories, err := h.hisRep.GetHistory(ctx.Request.Context(), userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
