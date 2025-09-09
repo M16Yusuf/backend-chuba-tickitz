@@ -14,5 +14,5 @@ func InitUserRouter(router *gin.Engine, db *pgxpool.Pool) {
 	uh := handlers.NewUserHandler(userRepository)
 
 	userRouter.GET("/:user_id", middleware.VerifyToken, middleware.Access("user", "admin"), uh.GetUserByID)
-	userRouter.POST("/update/:user_id", middleware.VerifyToken, middleware.Access("user", "admin"), uh.UpdateUser)
+	userRouter.PATCH("/:user_id", middleware.VerifyToken, middleware.Access("user", "admin"), uh.UpdateUser)
 }
