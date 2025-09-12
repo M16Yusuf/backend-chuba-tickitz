@@ -1,8 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/models"
@@ -165,5 +168,98 @@ func (u *UserHandler) UpdateUser(ctx *gin.Context) {
 			Code:      200,
 		},
 		Data: newProfile,
+	})
+}
+
+// update avatar
+// @Tags 				Profile
+// @Router 			/users/avatar  [PATCH]
+// @Summary 		Update registerd user
+// @Description Update user and show new updated data
+// @Param 			avatar formData file true     "Upload good image"
+// @Security 		JWTtoken
+// @produce			json
+// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
+// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @success			200 	{object}	models.ProfileResponse
+func (u *UserHandler) UpdateAvatar(ctx *gin.Context) {
+	// get user_id by parsing jwt token
+	claims, isExist := ctx.Get("claims")
+	if !isExist {
+		ctx.AbortWithStatusJSON(http.StatusForbidden, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      403,
+			},
+			Err: "Silahkan login kembali",
+		})
+		return
+	}
+
+	userClaim, ok := claims.(pkg.Claims)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: "Internal server serror",
+		})
+	}
+	userID := userClaim.UserId
+
+	// get image from body
+	var body models.UserAvatar
+	if err := ctx.ShouldBind(&body); err != nil {
+		log.Println("Internal server error.\nCause: ", err.Error())
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: "internal server error",
+		})
+		return
+	}
+
+	// process the image
+	file := body.Image
+	ext := filepath.Ext(file.Filename)
+
+	filename := fmt.Sprintf("%d_images_%d%s", time.Now().UnixNano(), userID, ext)
+	location := filepath.Join("public", filename)
+	if err := ctx.SaveUploadedFile(file, location); err != nil {
+		log.Println("Upload Failed.\nCause: ", err.Error())
+		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      400,
+			},
+			Err: "error when upload file",
+		})
+		return
+	}
+
+	// save to database
+	user, err := u.ur.EditAvatarProfile(ctx.Request.Context(), filename, userID)
+	if err != nil {
+		log.Println("Internal server error.\nCause: ", err.Error())
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: "Internal server error",
+		})
+		return
+	}
+
+	// returning updated user as response
+	ctx.JSON(http.StatusOK, models.ProfileResponse{
+		Response: models.Response{
+			IsSuccess: true,
+			Code:      200,
+		},
+		Data: user,
 	})
 }

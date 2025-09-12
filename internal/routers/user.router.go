@@ -15,4 +15,5 @@ func InitUserRouter(router *gin.Engine, db *pgxpool.Pool) {
 
 	userRouter.GET("", middleware.VerifyToken, middleware.Access("user", "admin"), uh.GetUserByID)
 	userRouter.PATCH("", middleware.VerifyToken, middleware.Access("user", "admin"), uh.UpdateUser)
+	userRouter.PATCH("/avatar", middleware.VerifyToken, middleware.Access("user", "admin"), uh.UpdateAvatar)
 }
