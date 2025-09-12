@@ -20,6 +20,9 @@ func InitRouter(db *pgxpool.Pool) *gin.Engine {
 	docs.SwaggerInfo.BasePath = "/"
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	// make directori public accesible
+	router.Static("/img", "public")
+
 	// setup routing
 	InitAuthRouter(router, db)
 	InitMovieRouter(router, db)
