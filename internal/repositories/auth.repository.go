@@ -36,13 +36,23 @@ func (a *AuthRepository) GetUserWithEmail(reqContxt context.Context, email strin
 
 // function add New users
 func (a *AuthRepository) NewUser(reqContxt context.Context, email, password string) (models.User, error) {
-	sql := "INSERT INTO users(email, password) VALUES ($1, $2) RETURNING id, first_name, last_name, email, role, gender"
+	// insert inputs new user to table user
+	sql1 := "INSERT INTO users(email, password) VALUES ($1, $2) RETURNING id"
 	values := []any{email, password}
-	var NewUser models.User
-	err := a.db.QueryRow(reqContxt, sql, values...).Scan(&NewUser.Id, &NewUser.FirstName, &NewUser.LastName, &NewUser.Email, &NewUser.Role, &NewUser.Gender)
+	var tempNewUserID models.User
+	err := a.db.QueryRow(reqContxt, sql1, values...).Scan(&tempNewUserID.Id)
 	if err != nil {
 		log.Println("Scan Error, ", err.Error())
 		return models.User{}, err
 	}
+	// insert new user_id as new profile
+	sql2 := "INSERT INTO profiles(user_id) VALUES($1) RETURNING user_id, first_name, last_name, avatar_path, point, phone_number, gender"
+	var NewUser models.User
+	err = a.db.QueryRow(reqContxt, sql2, tempNewUserID.Id).Scan(&NewUser.Id, &NewUser.FirstName, &NewUser.LastName, &NewUser.AvatarPath, &NewUser.Point, &NewUser.Phone, &NewUser.Gender)
+	if err != nil {
+		log.Println("Scan Error, ", err.Error())
+		return models.User{}, err
+	}
+	// return result returning from query as model user
 	return NewUser, nil
 }
