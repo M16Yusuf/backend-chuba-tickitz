@@ -174,7 +174,7 @@ func (u *UserHandler) UpdateUser(ctx *gin.Context) {
 // update avatar
 // @Tags 				Profile
 // @Router 			/users/avatar  [PATCH]
-// @Summary 		Update registerd user
+// @Summary 		Update avatar registerd user
 // @Description Update user and show new updated data
 // @Param 			avatar formData file true     "Upload good image"
 // @Security 		JWTtoken
