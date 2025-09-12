@@ -497,6 +497,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/avatar": {
+            "patch": {
+                "security": [
+                    {
+                        "JWTtoken": []
+                    }
+                ],
+                "description": "Update user and show new updated data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update registerd user",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Upload good image",
+                        "name": "avatar",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ProfileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/{any}": {
             "get": {
                 "description": "if route not found, send 404 statusNotfound as response",
@@ -972,6 +1018,9 @@ const docTemplate = `{
         "models.User": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
