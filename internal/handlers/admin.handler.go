@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -19,9 +20,9 @@ func NewAdminHandler(AdRep *repositories.AdminRepository) *AdminHandler {
 
 // Get all movies (admin)
 // @Tags Admin
-// @Router   		/admin/allmovies [GET]
+// @Router   		/admin/movies [GET]
 // @Summary 		Get all list movies
-// @Description Get 	Get all data movies, admin role required
+// @Description Get Get all data movies, admin role required
 // @Param				page	query		int 	false 	"opsional query for pagination"
 // @Security 		JWTtoken
 // @produce			json
@@ -71,5 +72,39 @@ func (ah *AdminHandler) GetAllMovieAdmin(ctx *gin.Context) {
 			Page:      page,
 		},
 		Data: movies,
+	})
+}
+
+// Delete a movie
+// @Tags Admin
+// @Router /admin/movies/{movie_id} [DELETE]
+// @Summary 							Delete a movie
+// @Description 					Delete a movie (soft delete), admin role required
+// @Param				movie_id	path 	int 	true 	"movie with this id will be delete"
+// @Security 		JWTtoken
+// @produce			json
+// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
+// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @success			200 	{object}	models.Response
+func (ah *AdminHandler) DeleteMovieByID(ctx *gin.Context) {
+	movieID := ctx.Param("movie_id")
+	log.Println(movieID)
+	if err := ah.AdRep.DeleteMovie(ctx.Request.Context(), movieID); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      400,
+			},
+			Err: err.Error(),
+		})
+		return
+	}
+
+	// send http status success delet
+	ctx.JSON(http.StatusOK, models.Response{
+		IsSuccess: true,
+		Code:      200,
+		Msg:       "Movies deleted successfully",
 	})
 }

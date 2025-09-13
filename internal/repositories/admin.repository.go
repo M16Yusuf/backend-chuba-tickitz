@@ -3,7 +3,10 @@ package repositories
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/models"
@@ -58,4 +61,32 @@ func (a *AdminRepository) GetAllMovies(reqCntxt context.Context, offset, limit i
 	}
 
 	return movies, nil
+}
+
+// Delete a movie, require admin role
+// soft delete: just set time on column deleted_at
+// Query effected table : mmovies only
+func (a *AdminRepository) DeleteMovie(reqCntxt context.Context, movieID string) error {
+	sql := `UPDATE movies SET deleted_at=CURRENT_TIMESTAMP WHERE id=$1`
+	// change query input become int instead of string
+	newMovieID, err := strconv.Atoi(movieID)
+	if err != nil {
+		log.Println("Failed convert string to int\nCause : ", err)
+		return err
+	}
+
+	cmd, err := a.db.Exec(reqCntxt, sql, newMovieID)
+	if err != nil {
+		log.Println("Failed execute query\nCause:", err)
+		return err
+	}
+	if cmd.RowsAffected() == 0 {
+		log.Println("No movies found with given id: ")
+		errormsg := fmt.Sprintf("no movies found with given id: %s", movieID)
+		return errors.New(errormsg)
+	}
+
+	// if no error return nil
+	log.Println("Movie deleted successfully:", movieID)
+	return nil
 }
