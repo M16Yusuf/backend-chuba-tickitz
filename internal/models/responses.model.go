@@ -1,9 +1,10 @@
 package models
 
 type Response struct {
-	IsSuccess bool `json:"is_success"`
-	Code      int  `json:"code,omitempty"`
-	Page      int  `json:"page,omitempty"`
+	IsSuccess bool   `json:"is_success"`
+	Code      int    `json:"code,omitempty"`
+	Page      int    `json:"page,omitempty"`
+	Msg       string `json:"message,omitempty"`
 }
 
 type ErrorResponse struct {
