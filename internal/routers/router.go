@@ -30,6 +30,7 @@ func InitRouter(db *pgxpool.Pool) *gin.Engine {
 	InitSeatRouter(router, db)
 	InitUserRouter(router, db)
 	InitHistoryRouter(router, db)
+	InitAdminRouter(router, db)
 
 	router.NoRoute(handlers.NoRouteHandler)
 	return router
