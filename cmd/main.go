@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/joho/godotenv"
@@ -30,11 +31,21 @@ func main() {
 	}
 	defer db.Close()
 
-	// testing connection with database
+	// testing DB connection with database
 	if err := configs.TestDB(db); err != nil {
 		log.Println("Ping to DB failsed\nCause: ", err.Error())
 	}
 	log.Println("DB connected")
+
+	// inisialization redish
+	rdb := configs.InitRedis()
+	cmd := rdb.Ping(context.Background())
+	if cmd.Err() != nil {
+		log.Println("failed ping on redis \nCause:", cmd.Err().Error())
+		return
+	}
+	log.Println("Redis Connected")
+	defer rdb.Close()
 
 	// Inisialization engine gin, HTTP framework
 	router := routers.InitRouter(db)
