@@ -17,6 +17,18 @@ definitions:
     - email
     - password
     type: object
+  models.BadRequestResponse:
+    properties:
+      code:
+        example: 400
+        type: integer
+      error:
+        example: Example bad request error...
+        type: string
+      is_success:
+        example: false
+        type: boolean
+    type: object
   models.BookedSeatBySchedule:
     properties:
       paid_at:
@@ -46,15 +58,46 @@ definitions:
       city_name:
         type: string
     type: object
+  models.CreateOrder:
+    properties:
+      code_ticket:
+        type: string
+      created_at:
+        type: string
+      movie_id:
+        type: integer
+      paid_at:
+        type: string
+      payment_id:
+        type: integer
+      rating:
+        type: number
+      schedule_id:
+        type: integer
+      seats:
+        items:
+          $ref: '#/definitions/models.Seat'
+        type: array
+      total_price:
+        type: integer
+      user_id:
+        type: integer
+    type: object
   models.DetailsMovieResponse:
     properties:
       code:
+        example: 200
         type: integer
       data:
         $ref: '#/definitions/models.MovieDetails'
       is_success:
+        example: true
         type: boolean
+      message:
+        example: Example message success...
+        type: string
       page:
+        example: 1
         type: integer
     type: object
   models.Director:
@@ -63,18 +106,6 @@ definitions:
         type: integer
       name:
         type: string
-    type: object
-  models.ErrorResponse:
-    properties:
-      code:
-        type: integer
-      error:
-        example: Error message...
-        type: string
-      is_success:
-        type: boolean
-      page:
-        type: integer
     type: object
   models.Genre:
     properties:
@@ -86,14 +117,20 @@ definitions:
   models.HistoiesResponse:
     properties:
       code:
+        example: 200
         type: integer
       data:
         items:
           $ref: '#/definitions/models.History'
         type: array
       is_success:
+        example: true
         type: boolean
+      message:
+        example: Example message success...
+        type: string
       page:
+        example: 1
         type: integer
     type: object
   models.History:
@@ -109,7 +146,7 @@ definitions:
       code_ticket:
         type: string
       created_at:
-        type: number
+        type: string
       movie:
         $ref: '#/definitions/models.Movie'
       movie_id:
@@ -134,6 +171,18 @@ definitions:
         type: number
       transaction_id:
         type: integer
+    type: object
+  models.InternalErrorResponse:
+    properties:
+      code:
+        example: 500
+        type: integer
+      error:
+        example: Example Internal server error...
+        type: string
+      is_success:
+        example: false
+        type: boolean
     type: object
   models.Movie:
     properties:
@@ -209,14 +258,20 @@ definitions:
   models.MoviesResponse:
     properties:
       code:
+        example: 200
         type: integer
       data:
         items:
           $ref: '#/definitions/models.MovieList'
         type: array
       is_success:
+        example: true
         type: boolean
+      message:
+        example: Example message success...
+        type: string
       page:
+        example: 1
         type: integer
     type: object
   models.Payment:
@@ -229,12 +284,33 @@ definitions:
   models.ProfileResponse:
     properties:
       code:
+        example: 200
         type: integer
       data:
         $ref: '#/definitions/models.User'
       is_success:
+        example: true
         type: boolean
+      message:
+        example: Example message success...
+        type: string
       page:
+        example: 1
+        type: integer
+    type: object
+  models.Response:
+    properties:
+      code:
+        example: 200
+        type: integer
+      is_success:
+        example: true
+        type: boolean
+      message:
+        example: Example message success...
+        type: string
+      page:
+        example: 1
         type: integer
     type: object
   models.Schedule:
@@ -251,19 +327,25 @@ definitions:
   models.ScheduleResponse:
     properties:
       code:
+        example: 200
         type: integer
       data:
         items:
           $ref: '#/definitions/models.Schedule'
         type: array
       is_success:
+        example: true
         type: boolean
+      message:
+        example: Example message success...
+        type: string
       page:
+        example: 1
         type: integer
     type: object
   models.Seat:
     properties:
-      code:
+      seat_code:
         type: string
       seat_id:
         type: integer
@@ -271,26 +353,38 @@ definitions:
   models.SeatResponse:
     properties:
       code:
+        example: 200
         type: integer
       data:
         items:
           $ref: '#/definitions/models.BookedSeatBySchedule'
         type: array
       is_success:
+        example: true
         type: boolean
+      message:
+        example: Example message success...
+        type: string
       page:
+        example: 1
         type: integer
     type: object
   models.TokenResponse:
     properties:
       code:
+        example: 200
         type: integer
       is_success:
+        example: true
         type: boolean
+      message:
+        example: Example message success...
+        type: string
       page:
+        example: 1
         type: integer
       token:
-        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzU3MDM4NjQyfQ.J2MAUbAZvFpQl18BkSSyZOSMnbZxPziyZ6q6Bsuj8GU
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ... '
         type: string
     type: object
   models.User:
@@ -323,12 +417,18 @@ definitions:
   models.UserDetailResponse:
     properties:
       code:
+        example: 200
         type: integer
       data:
         $ref: '#/definitions/models.User'
       is_success:
+        example: true
         type: boolean
+      message:
+        example: Example message success...
+        type: string
       page:
+        example: 1
         type: integer
     type: object
 host: 127.0.0.1:8080
@@ -344,13 +444,70 @@ paths:
       produces:
       - application/json
       responses:
-        "404":
-          description: Not Found
+        "400":
+          description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.BadRequestResponse'
       summary: testing display for no route
       tags:
       - NoRoute
+  /admin/movies:
+    get:
+      description: Get Get all data movies, admin role required
+      parameters:
+      - description: opsional query for pagination
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MoviesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Get all list movies
+      tags:
+      - Admin
+  /admin/movies/{movie_id}:
+    delete:
+      description: Delete a movie (soft delete), admin role required
+      parameters:
+      - description: movie with this id will be delete
+        in: path
+        name: movie_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Delete a movie
+      tags:
+      - Admin
   /auth:
     post:
       consumes:
@@ -374,11 +531,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.BadRequestResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.InternalErrorResponse'
       summary: Login registered user
       tags:
       - login
@@ -405,11 +562,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.BadRequestResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.InternalErrorResponse'
       summary: Register new user
       tags:
       - Register
@@ -426,11 +583,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.BadRequestResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.InternalErrorResponse'
       security:
       - JWTtoken: []
       summary: Get histories user
@@ -466,11 +623,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.BadRequestResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.InternalErrorResponse'
       summary: filter movies by genres, title and pagination
       tags:
       - Movies
@@ -493,11 +650,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.BadRequestResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.InternalErrorResponse'
       summary: Get details from a movie
       tags:
       - Movies
@@ -519,11 +676,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.BadRequestResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.InternalErrorResponse'
       summary: Get popular movies
       tags:
       - Movies
@@ -545,14 +702,46 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.BadRequestResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.InternalErrorResponse'
       summary: Get upciming movies
       tags:
       - Movies
+  /order:
+    post:
+      description: 'Create order with inputs : (user_id, schedule_id, payment_id,
+        total_price, []seats{id, code})'
+      parameters:
+      - description: 'Inputs : (user_id, schedule_id, payment_id, total_price, []seats{id,
+          code})'
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateOrder'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Create order
+      tags:
+      - Order
   /schedules/{movieid}:
     get:
       description: Get schedules movie, for a movie
@@ -572,11 +761,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.BadRequestResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.InternalErrorResponse'
       security:
       - JWTtoken: []
       summary: Get schedule for a movie
@@ -601,11 +790,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.BadRequestResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.InternalErrorResponse'
       security:
       - JWTtoken: []
       summary: Get Booked seat
@@ -624,11 +813,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.BadRequestResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.InternalErrorResponse'
       security:
       - JWTtoken: []
       summary: get profile user
@@ -653,11 +842,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.BadRequestResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.InternalErrorResponse'
       security:
       - JWTtoken: []
       summary: Update registerd user
@@ -682,14 +871,14 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.BadRequestResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/models.InternalErrorResponse'
       security:
       - JWTtoken: []
-      summary: Update registerd user
+      summary: Update avatar registerd user
       tags:
       - Profile
 securityDefinitions:

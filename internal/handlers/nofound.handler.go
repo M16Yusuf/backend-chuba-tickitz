@@ -9,11 +9,11 @@ import (
 
 // NoRouteHandler
 // @Tags NoRoute
+// @Router 			/{any} [get]
 // @Summary 		testing display for no route
 // @Description if route not found, send 404 statusNotfound as response
-// @Produce json
-// @Router /{any} [get]
-// @Failure 404 {object} models.ErrorResponse
+// @Produce 		json
+// @failure 		400		{object} 	models.BadRequestResponse "Bad Request"
 func NoRouteHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusNotFound, models.ErrorResponse{
 		Response: models.Response{

@@ -24,8 +24,8 @@ func NewMovieHandler(movRepo *repositories.MovieRepository) *MovieHandler {
 // @Description Get upcoming movies, filter movies that not aired yet
 // @Param				page	query		int 	false 	"opsional query for pagination"
 // @produce			json
-// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
-// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @failure 		400		{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 	{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success			200 	{object}	models.MoviesResponse
 func (m *MovieHandler) UpcomingMovie(ctx *gin.Context) {
 	// Make pagenation using query LIMIT dan OFFSET
@@ -79,8 +79,8 @@ func (m *MovieHandler) UpcomingMovie(ctx *gin.Context) {
 // @Description Get popular movies, filter movies already rated on every transaction
 // @Param				page	query		int 	false 	"opsional query for pagination"
 // @produce			json
-// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
-// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @failure 		400		{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 	{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success			200 	{object}	models.MoviesResponse
 func (m *MovieHandler) PopularMovie(ctx *gin.Context) {
 	// Make pagenation using query LIMIT dan OFFSET
@@ -138,8 +138,8 @@ func (m *MovieHandler) PopularMovie(ctx *gin.Context) {
 // @Param				genres	query		[]string false 	"opsional query for filter genres" collectionFormat(multi)
 // @Produce 		json
 // @produce			json
-// @failure 		400			{object} 	models.ErrorResponse "Bad Request"
-// @failure 		500 		{object} 	models.ErrorResponse "Internal Server Error"
+// @failure 		400			{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 		{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success			200 		{object}	models.DetailsMovieResponse
 func (m *MovieHandler) FilterMovie(ctx *gin.Context) {
 	// Make pagenation using query LIMIT dan OFFSET
@@ -198,8 +198,8 @@ func (m *MovieHandler) FilterMovie(ctx *gin.Context) {
 // @Description Get details movies, get data by known an id movie
 // @Param				movie_id	path  string	true "get detail movie by id movie"
 // @produce			json
-// @failure 		400				{object} 	models.ErrorResponse "Bad Request"
-// @failure 		500 			{object} 	models.ErrorResponse "Internal Server Error"
+// @failure 		400				{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 			{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success			200 			{object}	models.ScheduleResponse
 func (m *MovieHandler) GetDetailMovie(ctx *gin.Context) {
 	movieID := ctx.Param("movie_id")

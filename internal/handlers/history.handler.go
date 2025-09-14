@@ -24,8 +24,8 @@ func NewHistoryHandler(hisRep *repositories.HistoryRepository) *HistoryHandler {
 // @Description Get all list histories from a user
 // @Security 		JWTtoken
 // @produce			json
-// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
-// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @failure 		400		{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 	{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success			200 	{object}	models.HistoiesResponse
 func (h *HistoryHandler) GetHistory(ctx *gin.Context) {
 	// get user_id by parsing jwt token

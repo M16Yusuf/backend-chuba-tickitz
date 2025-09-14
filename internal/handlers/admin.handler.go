@@ -26,8 +26,8 @@ func NewAdminHandler(AdRep *repositories.AdminRepository) *AdminHandler {
 // @Param				page	query		int 	false 	"opsional query for pagination"
 // @Security 		JWTtoken
 // @produce			json
-// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
-// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @failure 		400		{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 	{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success			200 	{object}	models.MoviesResponse
 func (ah *AdminHandler) GetAllMovieAdmin(ctx *gin.Context) {
 	// Make pagenation using query LIMIT dan OFFSET
@@ -83,8 +83,8 @@ func (ah *AdminHandler) GetAllMovieAdmin(ctx *gin.Context) {
 // @Param				movie_id	path 	int 	true 	"movie with this id will be delete"
 // @Security 		JWTtoken
 // @produce			json
-// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
-// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @failure 		400		{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 	{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success			200 	{object}	models.Response
 func (ah *AdminHandler) DeleteMovieByID(ctx *gin.Context) {
 	movieID := ctx.Param("movie_id")
@@ -108,3 +108,7 @@ func (ah *AdminHandler) DeleteMovieByID(ctx *gin.Context) {
 		Msg:       "Movies deleted successfully",
 	})
 }
+
+// func (ah *AdminHandler) AddMovie(ctx *gin.Context) {
+
+// }

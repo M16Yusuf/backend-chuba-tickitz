@@ -1,10 +1,10 @@
 package models
 
 type Response struct {
-	IsSuccess bool   `json:"is_success"`
-	Code      int    `json:"code,omitempty"`
-	Page      int    `json:"page,omitempty"`
-	Msg       string `json:"message,omitempty"`
+	IsSuccess bool   `json:"is_success"  example:"true"`
+	Code      int    `json:"code,omitempty"  example:"200"`
+	Page      int    `json:"page,omitempty"  example:"1"`
+	Msg       string `json:"message,omitempty"  example:"Example message success..."`
 }
 
 type ErrorResponse struct {
@@ -14,7 +14,7 @@ type ErrorResponse struct {
 
 type TokenResponse struct {
 	Response
-	Token string `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzU3MDM4NjQyfQ.J2MAUbAZvFpQl18BkSSyZOSMnbZxPziyZ6q6Bsuj8GU"`
+	Token string `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ... "`
 }
 
 type ProfileResponse struct {
@@ -50,4 +50,18 @@ type UserDetailResponse struct {
 type HistoiesResponse struct {
 	Response
 	Data []History `json:"data"`
+}
+
+// ===================== { Example error response for swagger } =====================
+
+type BadRequestResponse struct {
+	IsSuccess bool   `json:"is_success" example:"false"`
+	Code      int    `json:"code,omitempty" example:"400"`
+	Err       string `json:"error" example:"Example bad request error..."`
+}
+
+type InternalErrorResponse struct {
+	IsSuccess bool   `json:"is_success" example:"false"`
+	Code      int    `json:"code,omitempty" example:"500"`
+	Err       string `json:"error" example:"Example Internal server error..."`
 }

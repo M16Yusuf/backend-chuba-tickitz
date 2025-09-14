@@ -26,8 +26,8 @@ func NewOrderHandler(orRep *repositories.OrderRepository) *OrderHandler {
 // @Param 			body		body		models.CreateOrder true 		"Inputs : (user_id, schedule_id, payment_id, total_price, []seats{id, code})"
 // @Security 		JWTtoken
 // @produce			json
-// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
-// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @failure 		400		{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 	{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success			200 	{object}	models.Response
 func (oh *OrderHandler) CreateOrder(ctx *gin.Context) {
 	// get user_id by parsing jwt token

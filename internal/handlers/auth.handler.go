@@ -29,8 +29,8 @@ func NewAuthHandler(ar *repositories.AuthRepository) *AuthHandler {
 // @Param 			body		body		 models.Auth true 		"Input email and password"
 // @accept 			json
 // @produce 		json
-// @failure 		400 		{object} models.ErrorResponse "Bad Request"
-// @failure 		500 		{object} models.ErrorResponse "Internal Server Error"
+// @failure 		400			{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 		{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success 		200 		{object} models.TokenResponse
 func (a *AuthHandler) Login(ctx *gin.Context) {
 	var body models.Auth
@@ -153,8 +153,8 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 // @Param				body		body 		 models.Auth 	true		"Input email and password new user"
 // @accept			json
 // @produce			json
-// @failure 		400 		{object} models.ErrorResponse "Bad Request"
-// @failure 		500 		{object} models.ErrorResponse "Internal Server Error"
+// @failure 		400			{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 		{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success			200			{object} models.ProfileResponse
 func (a *AuthHandler) Register(ctx *gin.Context) {
 	var body models.Auth

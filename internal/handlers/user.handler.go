@@ -28,8 +28,8 @@ func NewUserHandler(ur *repositories.UserRepository) *UserHandler {
 // @Description Get details user, gt data by known id user
 // @Security 		JWTtoken
 // @produce			json
-// @failure 		400			{object} 	models.ErrorResponse "Bad Request"
-// @failure 		500 		{object} 	models.ErrorResponse "Internal Server Error"
+// @failure 		400			{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 		{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success			200 		{object}	models.UserDetailResponse
 func (u *UserHandler) GetUserByID(ctx *gin.Context) {
 	// get user_id by parsing jwt token
@@ -87,8 +87,8 @@ func (u *UserHandler) GetUserByID(ctx *gin.Context) {
 // @Param 			body 	body 			models.User true "Data new user"
 // @Security 		JWTtoken
 // @produce			json
-// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
-// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @failure 		400		{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 	{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success			200 	{object}	models.ProfileResponse
 func (u *UserHandler) UpdateUser(ctx *gin.Context) {
 	// binding body to model user
@@ -179,8 +179,8 @@ func (u *UserHandler) UpdateUser(ctx *gin.Context) {
 // @Param 			avatar formData file true     "Upload good image"
 // @Security 		JWTtoken
 // @produce			json
-// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
-// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @failure 		400		{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 	{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success			200 	{object}	models.ProfileResponse
 func (u *UserHandler) UpdateAvatar(ctx *gin.Context) {
 	// get user_id by parsing jwt token

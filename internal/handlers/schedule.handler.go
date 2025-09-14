@@ -24,8 +24,8 @@ func NewScheduleHandler(sr *repositories.ScheduleRepository) *ScheduleHandler {
 // @Param				movieid	path	string 	true 	"get schedule by this id movie"
 // @Security 		JWTtoken
 // @produce			json
-// @failure 		400		{object} 	models.ErrorResponse "Bad Request"
-// @failure 		500 	{object} 	models.ErrorResponse "Internal Server Error"
+// @failure 		400		{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 	{object} 	models.InternalErrorResponse "Internal Server Error"
 // @success			200 	{object}	models.ScheduleResponse
 func (s *ScheduleHandler) GetScheduleMovie(ctx *gin.Context) {
 	movieID := ctx.Param("movieid")
