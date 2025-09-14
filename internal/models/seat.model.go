@@ -4,7 +4,7 @@ import "time"
 
 type Seat struct {
 	Id   int    `db:"id" json:"seat_id"`
-	Code string `db:"code" json:"code"`
+	Code string `db:"code" json:"seat_code"`
 }
 
 type BookedSeatBySchedule struct {
