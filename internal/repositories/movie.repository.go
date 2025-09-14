@@ -110,21 +110,10 @@ func (m *MovieRepository) GetPopular(reqCntxt context.Context, offset, limit int
 		JOIN transactions t ON t.schedule_id = s.id
 		JOIN movie_genres mg ON m.id = mg.movie_id
 		JOIN genres g ON mg.genre_id = g.id
-		WHERE t.paid_at IS NOT NULL AND t.rating IS NOT NULL AND m.deleted_at IS NULL
+		WHERE  t.rating IS NOT NULL AND m.deleted_at IS NULL
 		GROUP BY m.id, m.poster_path, m.title
 		ORDER BY avg_rating DESC, rating_count DESC
 		LIMIT $2 OFFSET $1`
-
-	// `SELECT m.id, m.poster_path, m.title, AVG(t.rating) AS avg_rating, COUNT(t.id) AS rating_count,
-	// json_agg(DISTINCT jsonb_build_object('genre_id', g.id, 'genre_name', g.name)) AS genres
-	// FROM movies m
-	// JOIN transactions t ON m.id = t.movies_id
-	// JOIN genres_movies gm ON m.id = gm.movie_id
-	// JOIN genres g ON gm.genre_id = g.id
-	// WHERE t.paid_at != null AND t.rating IS NOT NULL AND m.deleted_at IS NULL
-	// GROUP BY m.id, m.poster_path, m.title
-	// ORDER BY avg_rating DESC, rating_count DESC
-	// LIMIT $2 OFFSET $1`
 
 	values := []any{offset, limit}
 	rows, err := m.db.Query(reqCntxt, sql, values...)
@@ -138,7 +127,7 @@ func (m *MovieRepository) GetPopular(reqCntxt context.Context, offset, limit int
 	for rows.Next() {
 		var Movie models.MovieList
 		var genreRaw []byte
-		if err := rows.Scan(&Movie.Id, &Movie.Poster, &Movie.Title, &Movie.Release_date, &genreRaw); err != nil {
+		if err := rows.Scan(&Movie.Id, &Movie.Poster, &Movie.Title, &Movie.AvgRating, &Movie.RatingCount, &genreRaw); err != nil {
 			log.Println("Scan Error, ", err.Error())
 			return []models.MovieList{}, err
 		}
