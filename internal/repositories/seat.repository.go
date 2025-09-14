@@ -22,7 +22,7 @@ func (s *SeatRepository) GetBooked(reqContxt context.Context, idSchedule string)
 		FROM schedules sch
 		JOIN movies m ON sch.movie_id = m.id
 		JOIN transactions t ON sch.id = t.schedule_id
-		JOIN order_seat os ON t.id = os.transaction_id
+		JOIN order_seats os ON t.id = os.transaction_id
 		JOIN seats s ON os.seat_id = s.id
 		WHERE sch.id = $1 AND t.paid_at != null
 		ORDER BY s.code ASC;`

@@ -44,8 +44,9 @@ func (a *AdminRepository) GetAllMovies(reqCntxt context.Context, offset, limit i
 	sql := `SELECT m.id, m.title,  m.poster_path, m.release_date, m.duration, 
 		json_agg(json_build_object('genre_id', g.id, 'genre_name', g.name)) AS genres
 		FROM movies m
-		LEFT JOIN genres_movies gm ON m.id = gm.movie_id
-		LEFT JOIN genres g ON gm.genre_id = g.id
+		LEFT JOIN movie_genres mg ON m.id = mg.movie_id
+		LEFT JOIN genres g ON mg.genre_id = g.id
+		WHERE m.deleted_at IS NULL
 		GROUP BY m.id, m.title, m.poster_path, m.release_date, m.duration
 		ORDER BY m.release_date DESC
 		LIMIT $2 OFFSET $1`
@@ -84,6 +85,14 @@ func (a *AdminRepository) GetAllMovies(reqCntxt context.Context, offset, limit i
 	}
 	// return data movies ([]model.movielist) , and errror nil if not error
 	return movies, nil
+}
+
+// Add data new movie, require admin role
+// Add data movie, actor, movie_genres, Director
+// Query effected table : movie, actor, movie_genres, director
+func (a *AdminRepository) AddMovie(reqCntxt context.Context, body models.MovieDetails) error {
+
+	return nil
 }
 
 // Delete a movie, require admin role

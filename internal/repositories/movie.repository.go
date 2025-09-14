@@ -43,8 +43,8 @@ func (m *MovieRepository) GetUpcoming(reqCntxt context.Context, offset, limit in
 	sql := `SELECT m.id, m.poster_path, m.title, m.release_date, 
 		json_agg(json_build_object('genre_id', g.id, 'genre_name', g.name)) AS genres
 		FROM movies m
-		JOIN genres_movies gm ON m.id = gm.movie_id
-		JOIN genres g ON gm.genre_id = g.id
+		JOIN movie_genres mg ON m.id = mg.movie_id
+		JOIN genres g ON mg.genre_id = g.id
 		WHERE m.release_date > CURRENT_DATE AND m.deleted_at IS NULL
 		GROUP BY m.id, m.poster_path, m.title, m.release_date
 		LIMIT $2 OFFSET $1`
@@ -108,8 +108,8 @@ func (m *MovieRepository) GetPopular(reqCntxt context.Context, offset, limit int
 		FROM movies m
 		JOIN schedules s ON s.movie_id = m.id
 		JOIN transactions t ON t.schedule_id = s.id
-		JOIN genres_movies gm ON m.id = gm.movie_id
-		JOIN genres g ON gm.genre_id = g.id
+		JOIN movie_genres mg ON m.id = mg.movie_id
+		JOIN genres g ON mg.genre_id = g.id
 		WHERE t.paid_at IS NOT NULL AND t.rating IS NOT NULL AND m.deleted_at IS NULL
 		GROUP BY m.id, m.poster_path, m.title
 		ORDER BY avg_rating DESC, rating_count DESC
@@ -169,8 +169,8 @@ func (m *MovieRepository) GetFiltered(reqCntxt context.Context, offset, limit in
 	sql := `SELECT m.id, m.poster_path, m.title, 
 	json_agg(DISTINCT jsonb_build_object('genre_id', g.id, 'genre_name', g.name)) AS genres	
 	FROM movies m
-	JOIN genres_movies gm ON m.id = gm.movie_id
-	JOIN genres g ON gm.genre_id = g.id `
+	JOIN movie_genres mg ON m.id = mg.movie_id
+	JOIN genres g ON mg.genre_id = g.id `
 	if search != "" {
 		idx := strconv.Itoa(len(values) + 1)
 		sql += "WHERE m.title ILIKE '%' || $" + idx + " || '%'	"
@@ -223,10 +223,10 @@ func (m *MovieRepository) GetMovieDetails(reqCntxt context.Context, movieID stri
 	json_agg(DISTINCT jsonb_build_object('actor_id', a.id, 'actor_name', a.name)) AS actors
   FROM movies m
   JOIN directors d ON m.director_id = d.id
-  LEFT JOIN genres_movies gm ON m.id = gm.movie_id
-  LEFT JOIN genres g ON gm.genre_id = g.id
-  LEFT JOIN actors_movies am ON m.id = am.movie_id
-  LEFT JOIN actors a ON am.actor_id = a.id
+	LEFT JOIN movie_genres mg ON m.id = mg.movie_id
+	LEFT JOIN genres g ON mg.genre_id = g.id
+  LEFT JOIN movie_actors ma ON m.id = ma.movie_id
+  LEFT JOIN actors a ON ma.actor_id = a.id
   WHERE m.id = $1
   GROUP BY m.id, m.title, m.overview, m.poster_path, m.backdrop_path, m.release_date, m.duration, d.name, d.id;`
 

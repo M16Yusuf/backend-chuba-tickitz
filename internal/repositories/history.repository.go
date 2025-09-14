@@ -29,7 +29,7 @@ func (h *HistoryRepository) GetHistory(reqContxt context.Context, userID int) ([
 		LEFT JOIN cinemas c ON sch.cinema_id = c.id
 		LEFT JOIN cities ci ON sch.city_id = ci.id
 		LEFT JOIN payments p ON t.payment_id = p.id
-		LEFT JOIN order_seat os ON t.id = os.transaction_id
+		LEFT JOIN order_seats os ON t.id = os.transaction_id
     LEFT JOIN seats s ON os.seat_id = s.id
 		WHERE t.user_id = $1
 		GROUP BY t.id, m.title, sch.schedule, p.method, c.name, ci.name

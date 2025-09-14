@@ -38,7 +38,7 @@ func (o *OrderRepository) CreateOrder(reqCntxt context.Context, body models.Crea
 	log.Println(tempID)
 
 	// Query insert order_seat
-	sqlOrderSeat := `INSERT INTO order_seat (seat_id, transaction_id) VALUES `
+	sqlOrderSeat := `INSERT INTO order_seats (seat_id, transaction_id) VALUES `
 	for idx, data := range body.Seats {
 		sqlOrderSeat = fmt.Sprintf("%s (%d, %d)", sqlOrderSeat, data.Id, tempID)
 		if idx < len(body.Seats)-1 {
