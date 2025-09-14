@@ -5,29 +5,47 @@ import (
 	"encoding/json"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/lib/pq"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/models"
+	"github.com/m16yusuf/backend-chuba-tickitz/internal/utils"
+	"github.com/redis/go-redis/v9"
 )
 
 type MovieRepository struct {
-	db *pgxpool.Pool
+	db  *pgxpool.Pool
+	rdb *redis.Client
 }
 
-func NewMovieRepository(db *pgxpool.Pool) *MovieRepository {
-	return &MovieRepository{db: db}
+func NewMovieRepository(db *pgxpool.Pool, rdb *redis.Client) *MovieRepository {
+	return &MovieRepository{db: db, rdb: rdb}
 }
 
 // Function Query untuk Upcoming movies
 // upcoming, movie yang release datenya masih in the future
 func (m *MovieRepository) GetUpcoming(reqCntxt context.Context, offset, limit int) ([]models.MovieList, error) {
+
+	// Get cached upcoming movies, before accesing database
+	// Get and renew cache only for page 1 only (offset 0)
+	rdbKey := "chuba_tickitz:movies-upcoming"
+	if offset == 0 {
+		cachedUpcomMovies, err := utils.RedisGetData[[]models.MovieList](reqCntxt, *m.rdb, rdbKey)
+		if err != nil {
+			log.Println("Redis error :", err)
+		} else if cachedUpcomMovies != nil && len(*cachedUpcomMovies) > 0 {
+			return *cachedUpcomMovies, nil
+		}
+	}
+
+	// if there is no key/ no cached data, get upcoming movies from database
 	sql := `SELECT m.id, m.poster_path, m.title, m.release_date, 
 		json_agg(json_build_object('genre_id', g.id, 'genre_name', g.name)) AS genres
 		FROM movies m
 		JOIN genres_movies gm ON m.id = gm.movie_id
 		JOIN genres g ON gm.genre_id = g.id
-		WHERE m.release_date > CURRENT_DATE
+		WHERE m.release_date > CURRENT_DATE AND m.deleted_at IS NULL
 		GROUP BY m.id, m.poster_path, m.title, m.release_date
 		LIMIT $2 OFFSET $1`
 
@@ -54,25 +72,59 @@ func (m *MovieRepository) GetUpcoming(reqCntxt context.Context, offset, limit in
 			log.Println("Unmarshal Error:", err)
 			return nil, err
 		}
-
 		Movies = append(Movies, Movie)
 	}
+
+	// make cache upcoming movies after query data from database
+	// Get and renew cache only for page 1 only (offset 0)
+	if offset == 0 {
+		if err := utils.RedisRenewData(reqCntxt, *m.rdb, rdbKey, Movies, 5*time.Minute); err != nil {
+			log.Println("Failed to renew Redis cache:", err.Error())
+		}
+	}
+	// return data movies ([]model,movielist), and return error nil of not error
 	return Movies, nil
 }
 
 // Function query for Popular movies
 // Popular, movie sorted by rating from transaction
 func (m *MovieRepository) GetPopular(reqCntxt context.Context, offset, limit int) ([]models.MovieList, error) {
+
+	// Get cached popular movies, before accesing database
+	// Get and renew cache only for page 1 only (offset 0)
+	rdbKey := "chuba_tickitz:movies-popular"
+	if offset == 0 {
+		cachedPopMovies, err := utils.RedisGetData[[]models.MovieList](reqCntxt, *m.rdb, rdbKey)
+		if err != nil {
+			log.Println("Redis error :", err)
+		} else if cachedPopMovies != nil && len(*cachedPopMovies) > 0 {
+			return *cachedPopMovies, nil
+		}
+	}
+
+	// if there is no key/ no cached data, get popular movies from database
 	sql := `SELECT m.id, m.poster_path, m.title, AVG(t.rating) AS avg_rating, COUNT(t.id) AS rating_count,
-		json_agg(DISTINCT jsonb_build_object('genre_id', g.id, 'genre_name', g.name)) AS genres
+    json_agg(DISTINCT jsonb_build_object('genre_id', g.id, 'genre_name', g.name)) AS genres
 		FROM movies m
-		JOIN transactions t ON m.id = t.movies_id
+		JOIN schedules s ON s.movie_id = m.id
+		JOIN transactions t ON t.schedule_id = s.id
 		JOIN genres_movies gm ON m.id = gm.movie_id
 		JOIN genres g ON gm.genre_id = g.id
-		WHERE t.paid_at != null AND t.rating IS NOT NULL
+		WHERE t.paid_at IS NOT NULL AND t.rating IS NOT NULL AND m.deleted_at IS NULL
 		GROUP BY m.id, m.poster_path, m.title
 		ORDER BY avg_rating DESC, rating_count DESC
 		LIMIT $2 OFFSET $1`
+
+	// `SELECT m.id, m.poster_path, m.title, AVG(t.rating) AS avg_rating, COUNT(t.id) AS rating_count,
+	// json_agg(DISTINCT jsonb_build_object('genre_id', g.id, 'genre_name', g.name)) AS genres
+	// FROM movies m
+	// JOIN transactions t ON m.id = t.movies_id
+	// JOIN genres_movies gm ON m.id = gm.movie_id
+	// JOIN genres g ON gm.genre_id = g.id
+	// WHERE t.paid_at != null AND t.rating IS NOT NULL AND m.deleted_at IS NULL
+	// GROUP BY m.id, m.poster_path, m.title
+	// ORDER BY avg_rating DESC, rating_count DESC
+	// LIMIT $2 OFFSET $1`
 
 	values := []any{offset, limit}
 	rows, err := m.db.Query(reqCntxt, sql, values...)
@@ -90,15 +142,22 @@ func (m *MovieRepository) GetPopular(reqCntxt context.Context, offset, limit int
 			log.Println("Scan Error, ", err.Error())
 			return []models.MovieList{}, err
 		}
-
 		// Decode raw JSON into []Genre
 		if err := json.Unmarshal(genreRaw, &Movie.Genres); err != nil {
 			log.Println("Unmarshal Error:", err)
 			return nil, err
 		}
-
 		Movies = append(Movies, Movie)
 	}
+
+	// make cache popular movies after query data from database
+	// Get and renew cache only for page 1 only (offset 0)
+	if offset == 0 {
+		if err := utils.RedisRenewData(reqCntxt, *m.rdb, rdbKey, Movies, 5*time.Minute); err != nil {
+			log.Println("Failed to renew Redis cache:", err.Error())
+		}
+	}
+	// return data movies ([]model,movielist), and return error nil of not error
 	return Movies, nil
 }
 
