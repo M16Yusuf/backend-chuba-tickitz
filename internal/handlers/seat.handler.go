@@ -29,8 +29,7 @@ func NewSeatHandler(seatRepo *repositories.SeatRepository) *SeatHandler {
 // @success			200 	{object}	models.SeatResponse
 func (s *SeatHandler) GetBookedSeat(ctx *gin.Context) {
 	// get schedule id
-	scheduleID := ctx.Query("schedule_id")
-
+	scheduleID := ctx.Param("schedule_id")
 	seats, err := s.seatRepo.GetBooked(ctx.Request.Context(), scheduleID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
