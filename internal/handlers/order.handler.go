@@ -22,8 +22,8 @@ func NewOrderHandler(orRep *repositories.OrderRepository) *OrderHandler {
 // @Tags Order
 // @router 	 		/order 	[POST]
 // @Summary 		Create order
-// @Description Create order with inputs : (user_id, schedule_id, payment_id, total_price, []seats{id, code})
-// @Param 			body		body		models.CreateOrder true 		"Inputs : (user_id, schedule_id, payment_id, total_price, []seats{id, code})"
+// @Description Create order with inputs : (schedule_id, payment_id, total_price, []seats{id, code})
+// @Param 			body		body		models.CreateOrder true 		"Inputs : (schedule_id, payment_id, total_price, []seats{id, code})"
 // @Security 		JWTtoken
 // @produce			json
 // @failure 		400		{object} 	models.BadRequestResponse "Bad Request"
