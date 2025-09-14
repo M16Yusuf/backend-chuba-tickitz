@@ -23,19 +23,24 @@ func NewOrderRepository(db *pgxpool.Pool) *OrderRepository {
 // Insert data from body (user_id, schedule_id, payment_id, total_price, []seats{id, code})
 // Query tables effected : transactions, order_seat
 func (o *OrderRepository) CreateOrder(reqCntxt context.Context, body models.CreateOrder, userId int) error {
-	// Query Insert transaction
+
+	// insert all query inside postgreSQL's transaction
+	tx, err := o.db.Begin(reqCntxt)
+	if err != nil {
+		log.Println("Failed to begin DB transaction\nCause: ", err)
+		return err
+	}
+	defer tx.Rollback(reqCntxt)
+
+	// Query Insert table transaction
 	sqlTransaction := `INSERT INTO transactions (user_id, schedule_id, payment_id, total_price)
 		VALUES ($1, $2, $3, $4) RETURNING id`
-
 	values := []any{userId, body.ScheduleId, body.PaymentId, body.TotalPrice}
-
 	var tempID int
-	if err := o.db.QueryRow(reqCntxt, sqlTransaction, values...).Scan(&tempID); err != nil {
+	if err := tx.QueryRow(reqCntxt, sqlTransaction, values...).Scan(&tempID); err != nil {
 		log.Println("Failed execute query\nCause: ", err)
 		return err
 	}
-
-	log.Println(tempID)
 
 	// Query insert order_seat
 	sqlOrderSeat := `INSERT INTO order_seats (seat_id, transaction_id) VALUES `
@@ -45,9 +50,7 @@ func (o *OrderRepository) CreateOrder(reqCntxt context.Context, body models.Crea
 			sqlOrderSeat += ", "
 		}
 	}
-	log.Println("Final query : ", sqlOrderSeat)
-
-	cmd, err := o.db.Exec(reqCntxt, sqlOrderSeat)
+	cmd, err := tx.Exec(reqCntxt, sqlOrderSeat)
 	if err != nil {
 		log.Println("Failed execute query\nCause:", err)
 		return err
@@ -56,6 +59,13 @@ func (o *OrderRepository) CreateOrder(reqCntxt context.Context, body models.Crea
 		log.Println("no row effected when insert order_seat maybe failed?")
 		return errors.New("no row effected when insert order_seat maybe failed?")
 	}
+
+	// commit transaction if both query success execute
+	if err := tx.Commit(reqCntxt); err != nil {
+		log.Println("Failed to commit DB transaction\nCause: ", err)
+		return err
+	}
+	log.Println("success to commit DB transaction")
 
 	// if success/no error return error is nil
 	return nil
