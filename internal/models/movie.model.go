@@ -15,7 +15,9 @@ type Movie struct {
 
 type MovieList struct {
 	Movie
-	Genres []Genre `json:"genres"`
+	Genres      []Genre `json:"genres"`
+	AvgRating   float64 `db:"avg_rating" json:"avg_rating,omitempty"`
+	RatingCount int     `db:"rating_count" json:"rating_count,omitempty"`
 }
 
 type MovieDetails struct {
