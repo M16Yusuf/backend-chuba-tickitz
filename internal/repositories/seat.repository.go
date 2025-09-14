@@ -18,16 +18,18 @@ func NewSeatRepository(db *pgxpool.Pool) *SeatRepository {
 
 // get booked seat of a movie by a schedule id
 func (s *SeatRepository) GetBooked(reqContxt context.Context, idSchedule string) ([]models.BookedSeatBySchedule, error) {
+	log.Println(idSchedule)
 	sql := `SELECT sch.id AS schedule_id, m.title, sch.schedule, s.code AS seat_code, t.id AS transaction_id, t.paid_at
 		FROM schedules sch
 		JOIN movies m ON sch.movie_id = m.id
 		JOIN transactions t ON sch.id = t.schedule_id
 		JOIN order_seats os ON t.id = os.transaction_id
 		JOIN seats s ON os.seat_id = s.id
-		WHERE sch.id = $1 AND t.paid_at != null
+		WHERE sch.id = $1
 		ORDER BY s.code ASC;`
 
 	rows, err := s.db.Query(reqContxt, sql, idSchedule)
+	log.Println(rows)
 	if err != nil {
 		log.Println("internal server error : ", err.Error())
 		return []models.BookedSeatBySchedule{}, err
