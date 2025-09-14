@@ -48,7 +48,7 @@ func main() {
 	defer rdb.Close()
 
 	// Inisialization engine gin, HTTP framework
-	router := routers.InitRouter(db)
+	router := routers.InitRouter(db, rdb)
 	//  run the engine gin
 	// Run this project on 127.0.0.1:8080 or localhost:8080
 	router.Run("127.0.0.1:8080")

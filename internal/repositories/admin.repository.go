@@ -7,23 +7,40 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/models"
+	"github.com/m16yusuf/backend-chuba-tickitz/internal/utils"
+	"github.com/redis/go-redis/v9"
 )
 
 type AdminRepository struct {
-	db *pgxpool.Pool
+	db  *pgxpool.Pool
+	rdb *redis.Client
 }
 
-func NewAdminRepository(db *pgxpool.Pool) *AdminRepository {
-	return &AdminRepository{db: db}
+func NewAdminRepository(db *pgxpool.Pool, rdb *redis.Client) *AdminRepository {
+	return &AdminRepository{db: db, rdb: rdb}
 }
 
 // Get all movie for admih dashboard page
 // Get data movie with page (limit 20, offset)
 // Query table (movies, movies_genres)
 func (a *AdminRepository) GetAllMovies(reqCntxt context.Context, offset, limit int) ([]models.MovieList, error) {
+
+	// Get cached all movies, before accesing database
+	// Get and renew cache only for page 1 only (offset 0)
+	rdbKey := "chuba_tickitz:admin-allmovies"
+	if offset == 0 {
+		cachedAllMovies, err := utils.RedisGetData[[]models.MovieList](reqCntxt, *a.rdb, rdbKey)
+		if err != nil {
+			log.Println("Redis error :", err)
+		} else if cachedAllMovies != nil && len(*cachedAllMovies) > 0 {
+			return *cachedAllMovies, nil
+		}
+	}
+
 	sql := `SELECT m.id, m.title,  m.poster_path, m.release_date, m.duration, 
 		json_agg(json_build_object('genre_id', g.id, 'genre_name', g.name)) AS genres
 		FROM movies m
@@ -50,16 +67,22 @@ func (a *AdminRepository) GetAllMovies(reqCntxt context.Context, offset, limit i
 			log.Println("Scan Error, ", err.Error())
 			return []models.MovieList{}, err
 		}
-
 		// decode raw JSOn into []Genres
 		if err := json.Unmarshal(genreRaw, &movie.Genres); err != nil {
 			log.Println("Unmarshal Error:", err)
 			return nil, err
 		}
-
 		movies = append(movies, movie)
 	}
 
+	// make cache all movies after query data from database
+	// Get and renew cache only for page 1 only (offset 0)
+	if offset == 0 {
+		if err := utils.RedisRenewData(reqCntxt, *a.rdb, rdbKey, movies, 10*time.Minute); err != nil {
+			log.Println("Failed to renew Redis cache:", err.Error())
+		}
+	}
+	// return data movies ([]model.movielist) , and errror nil if not error
 	return movies, nil
 }
 

@@ -5,13 +5,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/handlers"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/middleware"
+	"github.com/redis/go-redis/v9"
 
 	docs "github.com/m16yusuf/backend-chuba-tickitz/docs"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func InitRouter(db *pgxpool.Pool) *gin.Engine {
+func InitRouter(db *pgxpool.Pool, rdb *redis.Client) *gin.Engine {
 	// inisialisasi engine gin
 	router := gin.Default()
 	router.Use(middleware.CORSMiddleware)
@@ -25,13 +26,13 @@ func InitRouter(db *pgxpool.Pool) *gin.Engine {
 
 	// setup routing
 	InitAuthRouter(router, db)
-	InitMovieRouter(router, db)
+	InitMovieRouter(router, db, rdb)
 	InitScheduleRouter(router, db)
 	InitSeatRouter(router, db)
 	InitOrderRouter(router, db)
 	InitUserRouter(router, db)
 	InitHistoryRouter(router, db)
-	InitAdminRouter(router, db)
+	InitAdminRouter(router, db, rdb)
 
 	router.NoRoute(handlers.NoRouteHandler)
 	return router

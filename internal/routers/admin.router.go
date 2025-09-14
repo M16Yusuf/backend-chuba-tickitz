@@ -6,11 +6,12 @@ import (
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/handlers"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/middleware"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/repositories"
+	"github.com/redis/go-redis/v9"
 )
 
-func InitAdminRouter(router *gin.Engine, db *pgxpool.Pool) {
+func InitAdminRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	adminRouter := router.Group("/admin")
-	adminRepository := repositories.NewAdminRepository(db)
+	adminRepository := repositories.NewAdminRepository(db, rdb)
 	ah := handlers.NewAdminHandler(adminRepository)
 
 	adminRouter.GET("/movies", middleware.VerifyToken, middleware.Access("admin"), ah.GetAllMovieAdmin)
