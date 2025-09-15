@@ -88,10 +88,107 @@ func (a *AdminRepository) GetAllMovies(reqCntxt context.Context, offset, limit i
 }
 
 // Add data new movie, require admin role
-// Add data movie, actor, movie_genres, Director
-// Query effected table : movie, actor, movie_genres, director
+// Query effected table : movie, actor, movie_actors, movie_genres, director
 func (a *AdminRepository) AddMovie(reqCntxt context.Context, body models.MovieDetails) error {
 
+	// insert all query inside postgreSQL's transaction
+	tx, err := a.db.Begin(reqCntxt)
+	if err != nil {
+		log.Println("Failed to begin DB transaction\nCause: ", err)
+		return err
+	}
+	defer tx.Rollback(reqCntxt)
+
+	// query insert into table director
+	queryDirector := `INSERT INTO directors(name) VALUES ($1) RETURNING id`
+	var tempDirectorID int
+	if err := tx.QueryRow(reqCntxt, queryDirector, body.Director.Name).Scan(&tempDirectorID); err != nil {
+		log.Println("Failed execute query\nCause: ", err)
+		return err
+	}
+
+	// Query insert into table actors
+	queryActor := `INSERT INTO actors(name) VALUES `
+	for idx, data := range body.Actors {
+		queryActor = fmt.Sprintf("%s ('%s')", queryActor, data.Name)
+		if idx < len(body.Actors)-1 {
+			queryActor += ", "
+		}
+	}
+	queryActor += " RETURNING id"
+	log.Println(queryActor)
+	rows, err := tx.Query(reqCntxt, queryActor)
+	if err != nil {
+		log.Println("Failed execute query actors\nCause:", err)
+		return err
+	}
+	defer rows.Close()
+	// process the actors id
+	var tempActorID []int
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err != nil {
+			log.Println("failed scan actors rows\nCause:", err)
+		}
+		tempActorID = append(tempActorID, id)
+	}
+
+	// query insert into table movies
+	queryMovie := `INSERT INTO movies (poster_path, backdrop_path, title, overview, release_date, duration, director_id) 
+		VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`
+	var tempMovieID int
+	if err := tx.QueryRow(reqCntxt, queryMovie, body.Poster, body.Backdrop, body.Title, body.Overview, body.Release_date, body.Duration, tempDirectorID).Scan(&tempMovieID); err != nil {
+		log.Println("Failed execute query insert movie\nCause:", err)
+		return err
+	}
+
+	// query insert into table movie_genres
+	sqlMovieGenres := `INSERT INTO movie_genres (movie_id, genre_id) VALUES `
+	for idx, data := range body.Genres {
+		sqlMovieGenres = fmt.Sprintf("%s (%d, %d)", sqlMovieGenres, tempMovieID, data.Id)
+		if idx < len(body.Genres)-1 {
+			sqlMovieGenres += ", "
+		}
+	}
+	cmd, err := tx.Exec(reqCntxt, sqlMovieGenres)
+	if err != nil {
+		log.Println("Failed execute query movie_genres\nCause:", err)
+		return err
+	}
+	if cmd.RowsAffected() == 0 {
+		log.Println("no row effected when insert movie_genres maybe failed?")
+		return errors.New("no row effected when insert movie_genres maybe failed?")
+	}
+
+	// query insert into table movie_actors
+	sqlMovieActors := `INSERT INTO movie_actors (movie_id, actor_id) VALUES `
+	for idx, data := range tempActorID {
+		sqlMovieActors = fmt.Sprintf("%s (%d, %d)", sqlMovieActors, tempMovieID, data)
+		if idx < len(tempActorID)-1 {
+			sqlMovieActors += ", "
+		}
+	}
+	log.Println(tempActorID)
+	log.Println(sqlMovieActors)
+	cmd, err = tx.Exec(reqCntxt, sqlMovieActors)
+	if err != nil {
+		log.Println("Failed execute query movie_actors\nCause:", err)
+		return err
+	}
+	if cmd.RowsAffected() == 0 {
+		log.Println("no row effected when insert movie_actors maybe failed?")
+		return errors.New("no row effected when insert movie_actors maybe failed?")
+	}
+
+	// query insert insert table schedules
+
+	// commit transaction if both query success execute
+	if err := tx.Commit(reqCntxt); err != nil {
+		log.Println("Failed to commit DB transaction\nCause: ", err)
+		return err
+	}
+	log.Println("success to commit DB transaction")
+	// if success/no error return error is nil
 	return nil
 }
 

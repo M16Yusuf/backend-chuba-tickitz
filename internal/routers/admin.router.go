@@ -16,4 +16,5 @@ func InitAdminRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 
 	adminRouter.GET("/movies", middleware.VerifyToken, middleware.Access("admin"), ah.GetAllMovieAdmin)
 	adminRouter.DELETE("/movies/:movie_id", middleware.VerifyToken, middleware.Access("admin"), ah.DeleteMovieByID)
+	adminRouter.POST("/movies", middleware.VerifyToken, middleware.Access("admin"), ah.AddMovie)
 }

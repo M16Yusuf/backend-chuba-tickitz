@@ -1,6 +1,6 @@
 package models
 
 type Actor struct {
-	Id   int    `db:"id" json:"id"`
-	Name string `db:"name" json:"name"`
+	Id   int    `db:"id" json:"actor_id"`
+	Name string `db:"name" json:"actor_name"`
 }

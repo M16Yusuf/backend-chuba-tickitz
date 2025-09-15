@@ -10,7 +10,7 @@ type Movie struct {
 	Overview     *string    `db:"overview" json:"overview"`
 	Release_date *time.Time `db:"release_date" json:"release_date"`
 	Duration     *int       `db:"duration" json:"duration"`
-	Director_id  *int       `db:"director_id" json:"director_id"`
+	Director_id  *int       `db:"director_id" json:"director_id,omitempty"`
 }
 
 type MovieList struct {

@@ -109,6 +109,47 @@ func (ah *AdminHandler) DeleteMovieByID(ctx *gin.Context) {
 	})
 }
 
-// func (ah *AdminHandler) AddMovie(ctx *gin.Context) {
-
-// }
+// Create Data Movies
+// @Tags 	Admin
+// @router 	 		/admin/movies 	[POST]
+// @Summary 		Create new data movies
+// @Description Create data movies, "Inputs : (title, poster_path, backdrop_path, overview, duration, []actors{actor_name}, director{name}, []genres{genre_id})"
+// @Param 			body		body		models.MovieDetails true 	"Inputs : (title, poster_path, backdrop_path, overview, duration, []actors{actor_name}, director{name}, []genres{genre_id})"
+// @Security 		JWTtoken
+// @produce			json
+// @failure 		400		{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 	{object} 	models.InternalErrorResponse "Internal Server Error"
+// @success			200 	{object}	models.Response
+func (ah *AdminHandler) AddMovie(ctx *gin.Context) {
+	var body models.MovieDetails
+	if err := ctx.ShouldBind(&body); err != nil {
+		log.Println("Failed binding data\nCause: ", err)
+		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      400,
+			},
+			Err: "Failed binding data...",
+		})
+		return
+	}
+	// user func query for create data movie
+	err := ah.AdRep.AddMovie(ctx.Request.Context(), body)
+	if err != nil {
+		log.Println("Error Cause : ", err)
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: err.Error(),
+		})
+		return
+	} else {
+		ctx.JSON(http.StatusOK, models.Response{
+			IsSuccess: true,
+			Code:      200,
+			Msg:       "Success insert movies",
+		})
+	}
+}
