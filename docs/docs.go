@@ -420,7 +420,7 @@ const docTemplate = `{
                         "JWTtoken": []
                     }
                 ],
-                "description": "Create order with inputs : (user_id, schedule_id, payment_id, total_price, []seats{id, code})",
+                "description": "Create order with inputs : (schedule_id, payment_id, total_price, []seats{id, code})",
                 "produces": [
                     "application/json"
                 ],
@@ -430,7 +430,7 @@ const docTemplate = `{
                 "summary": "Create order",
                 "parameters": [
                     {
-                        "description": "Inputs : (user_id, schedule_id, payment_id, total_price, []seats{id, code})",
+                        "description": "Inputs : (schedule_id, payment_id, total_price, []seats{id, code})",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -1056,6 +1056,9 @@ const docTemplate = `{
         "models.MovieList": {
             "type": "object",
             "properties": {
+                "avg_rating": {
+                    "type": "number"
+                },
                 "backdrop_path": {
                     "type": "string"
                 },
@@ -1079,6 +1082,9 @@ const docTemplate = `{
                 },
                 "poster_path": {
                     "type": "string"
+                },
+                "rating_count": {
+                    "type": "integer"
                 },
                 "release_date": {
                     "type": "string"

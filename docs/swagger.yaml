@@ -234,6 +234,8 @@ definitions:
     type: object
   models.MovieList:
     properties:
+      avg_rating:
+        type: number
       backdrop_path:
         type: string
       director_id:
@@ -250,6 +252,8 @@ definitions:
         type: string
       poster_path:
         type: string
+      rating_count:
+        type: integer
       release_date:
         type: string
       title:
@@ -712,10 +716,10 @@ paths:
       - Movies
   /order:
     post:
-      description: 'Create order with inputs : (user_id, schedule_id, payment_id,
-        total_price, []seats{id, code})'
+      description: 'Create order with inputs : (schedule_id, payment_id, total_price,
+        []seats{id, code})'
       parameters:
-      - description: 'Inputs : (user_id, schedule_id, payment_id, total_price, []seats{id,
+      - description: 'Inputs : (schedule_id, payment_id, total_price, []seats{id,
           code})'
         in: body
         name: body

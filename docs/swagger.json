@@ -413,7 +413,7 @@
                         "JWTtoken": []
                     }
                 ],
-                "description": "Create order with inputs : (user_id, schedule_id, payment_id, total_price, []seats{id, code})",
+                "description": "Create order with inputs : (schedule_id, payment_id, total_price, []seats{id, code})",
                 "produces": [
                     "application/json"
                 ],
@@ -423,7 +423,7 @@
                 "summary": "Create order",
                 "parameters": [
                     {
-                        "description": "Inputs : (user_id, schedule_id, payment_id, total_price, []seats{id, code})",
+                        "description": "Inputs : (schedule_id, payment_id, total_price, []seats{id, code})",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -1049,6 +1049,9 @@
         "models.MovieList": {
             "type": "object",
             "properties": {
+                "avg_rating": {
+                    "type": "number"
+                },
                 "backdrop_path": {
                     "type": "string"
                 },
@@ -1072,6 +1075,9 @@
                 },
                 "poster_path": {
                     "type": "string"
+                },
+                "rating_count": {
+                    "type": "integer"
                 },
                 "release_date": {
                     "type": "string"
