@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/models"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/repositories"
+	"github.com/m16yusuf/backend-chuba-tickitz/internal/utils"
 	"github.com/m16yusuf/backend-chuba-tickitz/pkg"
 )
 
@@ -227,7 +228,7 @@ func (u *UserHandler) UpdateAvatar(ctx *gin.Context) {
 	ext := filepath.Ext(file.Filename)
 
 	filename := fmt.Sprintf("%d_images_%d%s", time.Now().UnixNano(), userID, ext)
-	location := filepath.Join("public", filename)
+	location := filepath.Join("public/profile", filename)
 	if err := ctx.SaveUploadedFile(file, location); err != nil {
 		log.Println("Upload Failed.\nCause: ", err.Error())
 		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
@@ -262,4 +263,105 @@ func (u *UserHandler) UpdateAvatar(ctx *gin.Context) {
 		},
 		Data: user,
 	})
+}
+
+// Update password
+// @Tags 				Profile
+// @Router 			/users/password  [PATCH]
+// @Summary 		Update password registerd user
+// @Description Update password user
+// @Param				body	 body 		models.Auth 	true		"Input new password registered user"
+// @Security 		JWTtoken
+// @accept			json
+// @produce			json
+// @failure 		400			{object} 	models.BadRequestResponse "Bad Request"
+// @failure 		500 		{object} 	models.InternalErrorResponse "Internal Server Error"
+// @success			200			{object}	models.Response
+func (u *UserHandler) UpdatePassword(ctx *gin.Context) {
+	// get user_id by parsing jwt token
+	claims, isExist := ctx.Get("claims")
+	if !isExist {
+		ctx.AbortWithStatusJSON(http.StatusForbidden, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      403,
+			},
+			Err: "Silahkan login kembali",
+		})
+		return
+	}
+
+	userClaim, ok := claims.(pkg.Claims)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: "Internal server serror",
+		})
+		return
+	}
+	userID := userClaim.UserId
+
+	// binding data from body for update password
+	var body models.Auth
+	if err := ctx.ShouldBind(&body); err != nil {
+		log.Println("Failed binding data \nCause: ", err.Error())
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      500,
+			},
+			Err: "Internal server error",
+		})
+		return
+	}
+
+	// validate format password
+	// must contain : character, digit, symbol, and 8 character
+	if err := utils.RegisterValidation(body); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      400,
+			},
+			Err: err.Error(),
+		})
+		return
+	} else {
+		// hash new password??
+		hc := pkg.NewHashConfig()
+		hc.UseRecommended()
+		hashed, err := hc.GenHash(body.Password)
+		if err != nil {
+			log.Println("Failed hash new password ...")
+			ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+				Response: models.Response{
+					IsSuccess: false,
+					Code:      500,
+				},
+				Err: err.Error(),
+			})
+			return
+		}
+
+		// insert into database new hashed password after hashed
+		if err := u.ur.EditPasswordUser(ctx.Request.Context(), hashed, userID); err != nil {
+			log.Println("Failed update database new password \nCause: ", err)
+			ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+				Response: models.Response{
+					IsSuccess: false,
+					Code:      500,
+				},
+				Err: "failed update password",
+			})
+			return
+		}
+		ctx.JSON(http.StatusOK, models.Response{
+			IsSuccess: true,
+			Code:      200,
+			Msg:       "success update password",
+		})
+	}
 }
