@@ -14,7 +14,11 @@ type ErrorResponse struct {
 
 type TokenResponse struct {
 	Response
-	Token string `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ... "`
+	Token     string  `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ... "`
+	Role      string  `json:"role" example:"user"`
+	FirstName string  `json:"first_name"`
+	LastName  string  `json:"last_name"`
+	Avatar    *string `json:"avatar_path"`
 }
 
 type ProfileResponse struct {
