@@ -51,7 +51,7 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 					IsSuccess: false,
 					Code:      400,
 				},
-				Err: "Password minimum 8 karakter",
+				Err: "Password minimum 8 characters",
 			})
 			return
 		}
@@ -75,7 +75,7 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 					IsSuccess: false,
 					Code:      400,
 				},
-				Err: "email atau Password salah",
+				Err: "Email or Password is incorrect",
 			})
 			return
 		}
@@ -117,7 +117,7 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 				IsSuccess: false,
 				Code:      400,
 			},
-			Err: "Nama atau Password salah",
+			Err: "Email or Password is incorrect",
 		})
 		return
 	}
@@ -141,7 +141,11 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 			IsSuccess: true,
 			Code:      200,
 		},
-		Token: jwtToken,
+		Token:     jwtToken,
+		Role:      user.Role,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Avatar:    user.AvatarPath,
 	})
 }
 
