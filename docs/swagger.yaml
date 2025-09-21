@@ -505,6 +505,24 @@ paths:
       tags:
       - Admin
   /auth:
+    delete:
+      description: Logout user by blacklist their token on redis
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Logout user by blacklist their token
+      tags:
+      - logout
     post:
       consumes:
       - application/json
