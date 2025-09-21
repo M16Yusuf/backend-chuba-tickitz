@@ -47,7 +47,7 @@ func (h *HistoryRepository) GetHistory(reqContxt context.Context, userID int) ([
 	for rows.Next() {
 		var history models.History
 		var seatRaw []byte
-		err := rows.Scan(&history.Id, &history.Code, &history.PaidAt, &history.Total, &history.CreatedAt, &history.Rating, &history.Movie.Title, &history.Schedule.Schedule, &history.Payment.Method, &history.Cinema.Name, &history.City.Name, &seatRaw)
+		err := rows.Scan(&history.Id, &history.Code, &history.PaidAt, &history.Total, &history.CreatedAt, &history.Rating, &history.MovieTitle, &history.ScheduleTime, &history.Payment_method, &history.CinemaName, &history.Cityname, &seatRaw)
 		if err != nil {
 			log.Println("Scan Error, ", err.Error())
 			return []models.History{}, err
