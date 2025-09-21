@@ -54,3 +54,25 @@ func RedisRenewData[m any](reqCntxt context.Context, redc redis.Client, rediskey
 	// return nil nil, if not error
 	return nil
 }
+
+// delete when update some data
+func DeleteAllCache(reqContxt context.Context, rdb redis.Client) error {
+	rdbKeys := []string{
+		"chuba_tickitz:admin-allmovies",
+		"chuba_tickitz:movies-upcoming",
+		"chuba_tickitz:movies-popular",
+	}
+	cmd := rdb.Del(reqContxt, rdbKeys...)
+	deletedCount, err := cmd.Result()
+	if err != nil {
+		log.Println("Redis Error.\nCause:", err.Error())
+		return err
+	}
+	if deletedCount == 0 {
+		log.Println("No keys were deleted.")
+	} else {
+		log.Printf("Successfully deleted %d keys.\n", deletedCount)
+	}
+	// return error nill if success
+	return nil
+}

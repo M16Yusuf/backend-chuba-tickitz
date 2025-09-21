@@ -188,6 +188,11 @@ func (a *AdminRepository) AddMovie(reqCntxt context.Context, body models.MovieDe
 		return err
 	}
 	log.Println("success to commit DB transaction")
+
+	// if success add new movie renew redis cache by delete current cache (invalidation)
+	if err := utils.DeleteAllCache(reqCntxt, *a.rdb); err != nil {
+		log.Println("error cahce invalidation\ncause", err)
+	}
 	// if success/no error return error is nil
 	return nil
 }
@@ -215,6 +220,10 @@ func (a *AdminRepository) DeleteMovie(reqCntxt context.Context, movieID string) 
 		return errors.New(errormsg)
 	}
 
+	// if success delete a movie renew redis cache by delete current cache (invalidation)
+	if err := utils.DeleteAllCache(reqCntxt, *a.rdb); err != nil {
+		log.Println("error cahce invalidation\ncause", err)
+	}
 	// if no error return nil
 	log.Println("Movie deleted successfully:", movieID)
 	return nil
