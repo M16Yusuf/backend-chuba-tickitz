@@ -29,8 +29,8 @@ func VerifyToken(rdb *redis.Client) gin.HandlerFunc {
 		// !DO cek token from redish if it not blacklisted
 
 		isBlacklisted, err := rdb.Get(ctx, "chuba_tickitz:blacklist:"+bearerToken).Result()
-		log.Println("Token sudah logout, silahkan login kembali")
 		if err == nil && isBlacklisted == "true" {
+			log.Println("Token sudah logout, silahkan login kembali")
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"success": false,
 				"error":   "Token sudah logout, silahkan login kembali",
