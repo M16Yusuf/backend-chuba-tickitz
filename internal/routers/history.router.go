@@ -6,12 +6,13 @@ import (
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/handlers"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/middleware"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/repositories"
+	"github.com/redis/go-redis/v9"
 )
 
-func InitHistoryRouter(router *gin.Engine, db *pgxpool.Pool) {
+func InitHistoryRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	historyRouter := router.Group("/histories")
 	historyRepository := repositories.NewHistoryRepository(db)
 	hh := handlers.NewHistoryHandler(historyRepository)
 
-	historyRouter.GET("", middleware.VerifyToken, middleware.Access("user", "admin"), hh.GetHistory)
+	historyRouter.GET("", middleware.VerifyToken(rdb), middleware.Access("user", "admin"), hh.GetHistory)
 }

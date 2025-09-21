@@ -25,13 +25,13 @@ func InitRouter(db *pgxpool.Pool, rdb *redis.Client) *gin.Engine {
 	router.Static("/img", "public")
 
 	// setup routing
-	InitAuthRouter(router, db)
+	InitAuthRouter(router, db, rdb)
 	InitMovieRouter(router, db, rdb)
-	InitScheduleRouter(router, db)
-	InitSeatRouter(router, db)
-	InitOrderRouter(router, db)
-	InitUserRouter(router, db)
-	InitHistoryRouter(router, db)
+	InitScheduleRouter(router, db, rdb)
+	InitSeatRouter(router, db, rdb)
+	InitOrderRouter(router, db, rdb)
+	InitUserRouter(router, db, rdb)
+	InitHistoryRouter(router, db, rdb)
 	InitAdminRouter(router, db, rdb)
 
 	router.NoRoute(handlers.NoRouteHandler)

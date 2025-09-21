@@ -6,12 +6,13 @@ import (
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/handlers"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/middleware"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/repositories"
+	"github.com/redis/go-redis/v9"
 )
 
-func InitSeatRouter(router *gin.Engine, db *pgxpool.Pool) {
+func InitSeatRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	seatRouter := router.Group("/seats")
 	seatRepository := repositories.NewSeatRepository(db)
 	sh := handlers.NewSeatHandler(seatRepository)
 
-	seatRouter.GET("/:schedule_id", middleware.VerifyToken, middleware.Access("user", "admin"), sh.GetBookedSeat)
+	seatRouter.GET("/:schedule_id", middleware.VerifyToken(rdb), middleware.Access("user", "admin"), sh.GetBookedSeat)
 }
