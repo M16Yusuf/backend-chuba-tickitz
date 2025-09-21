@@ -1,0 +1,19 @@
+name: Building Image and Pushing to GHCR
+on: [push]
+# enable permission fo rewrite current package
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  Build-andPublish:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Building image for ${{ github.repository }}"
+      - name: Check out repository code
+        uses: actions/checkout@v5
+      - name: Build and publish docker image for ${{ github.repository }}
+        uses: macbre/push-to-ghcr@master
+        with:
+          image_name: ${{ github.repository }} # it will be lowercased internally
+          github_token: ${{ secrets.GITHUB_TOKEN }}
