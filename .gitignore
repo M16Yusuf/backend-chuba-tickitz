@@ -2,3 +2,5 @@ tmp
 .fresh.yaml
 
 .env*
+
+public

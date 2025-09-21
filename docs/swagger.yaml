@@ -1,9 +1,9 @@
 definitions:
   models.Actor:
     properties:
-      id:
+      actor_id:
         type: integer
-      name:
+      actor_name:
         type: string
     type: object
   models.Auth:
@@ -43,20 +43,6 @@ definitions:
         type: string
       transaction_id:
         type: integer
-    type: object
-  models.Cinema:
-    properties:
-      cinema_id:
-        type: integer
-      cinema_name:
-        type: string
-    type: object
-  models.City:
-    properties:
-      city_id:
-        type: integer
-      city_name:
-        type: string
     type: object
   models.CreateOrder:
     properties:
@@ -135,35 +121,27 @@ definitions:
     type: object
   models.History:
     properties:
-      cinema:
-        $ref: '#/definitions/models.Cinema'
-      cinema_id:
-        type: integer
-      city:
-        $ref: '#/definitions/models.City'
-      city_id:
-        type: integer
+      cinema_name:
+        type: string
+      city_name:
+        type: string
       code_ticket:
         type: string
       created_at:
         type: string
-      movie:
-        $ref: '#/definitions/models.Movie'
-      movie_id:
-        type: integer
+      movie_title:
+        type: string
       paid_at:
         type: string
-      payment:
-        $ref: '#/definitions/models.Payment'
       payment_id:
         type: integer
+      payment_method:
+        type: string
       rating:
         type: number
-      schedule:
-        $ref: '#/definitions/models.Schedule'
-      schedule_id:
-        type: integer
-      seat:
+      schedule_time:
+        type: string
+      seats:
         items:
           $ref: '#/definitions/models.Seat'
         type: array
@@ -183,25 +161,6 @@ definitions:
       is_success:
         example: false
         type: boolean
-    type: object
-  models.Movie:
-    properties:
-      backdrop_path:
-        type: string
-      director_id:
-        type: integer
-      duration:
-        type: integer
-      movie_id:
-        type: integer
-      overview:
-        type: string
-      poster_path:
-        type: string
-      release_date:
-        type: string
-      title:
-        type: string
     type: object
   models.MovieDetails:
     properties:
@@ -277,13 +236,6 @@ definitions:
       page:
         example: 1
         type: integer
-    type: object
-  models.Payment:
-    properties:
-      payment_id:
-        type: integer
-      payment_method:
-        type: string
     type: object
   models.ProfileResponse:
     properties:
@@ -375,18 +327,27 @@ definitions:
     type: object
   models.TokenResponse:
     properties:
+      avatar_path:
+        type: string
       code:
         example: 200
         type: integer
+      first_name:
+        type: string
       is_success:
         example: true
         type: boolean
+      last_name:
+        type: string
       message:
         example: Example message success...
         type: string
       page:
         example: 1
         type: integer
+      role:
+        example: user
+        type: string
       token:
         example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ... '
         type: string
@@ -481,6 +442,37 @@ paths:
       security:
       - JWTtoken: []
       summary: Get all list movies
+      tags:
+      - Admin
+    post:
+      description: 'Create data movies, "Inputs : (title, poster_path, backdrop_path,
+        overview, duration, []actors{actor_name}, director{name}, []genres{genre_id})"'
+      parameters:
+      - description: 'Inputs : (title, poster_path, backdrop_path, overview, duration,
+          []actors{actor_name}, director{name}, []genres{genre_id})'
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.MovieDetails'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Create new data movies
       tags:
       - Admin
   /admin/movies/{movie_id}:
@@ -883,6 +875,38 @@ paths:
       security:
       - JWTtoken: []
       summary: Update avatar registerd user
+      tags:
+      - Profile
+  /users/password:
+    patch:
+      consumes:
+      - application/json
+      description: Update password user
+      parameters:
+      - description: Input new password registered user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Auth'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalErrorResponse'
+      security:
+      - JWTtoken: []
+      summary: Update password registerd user
       tags:
       - Profile
 securityDefinitions:

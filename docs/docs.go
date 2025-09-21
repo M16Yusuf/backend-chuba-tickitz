@@ -58,6 +58,52 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "JWTtoken": []
+                    }
+                ],
+                "description": "Create data movies, \"Inputs : (title, poster_path, backdrop_path, overview, duration, []actors{actor_name}, director{name}, []genres{genre_id})\"",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Create new data movies",
+                "parameters": [
+                    {
+                        "description": "Inputs : (title, poster_path, backdrop_path, overview, duration, []actors{actor_name}, director{name}, []genres{genre_id})",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.MovieDetails"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/admin/movies/{movie_id}": {
@@ -682,6 +728,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/password": {
+            "patch": {
+                "security": [
+                    {
+                        "JWTtoken": []
+                    }
+                ],
+                "description": "Update password user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update password registerd user",
+                "parameters": [
+                    {
+                        "description": "Input new password registered user",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Auth"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.InternalErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/{any}": {
             "get": {
                 "description": "if route not found, send 404 statusNotfound as response",
@@ -707,10 +804,10 @@ const docTemplate = `{
         "models.Actor": {
             "type": "object",
             "properties": {
-                "id": {
+                "actor_id": {
                     "type": "integer"
                 },
-                "name": {
+                "actor_name": {
                     "type": "string"
                 }
             }
@@ -768,28 +865,6 @@ const docTemplate = `{
                 },
                 "transaction_id": {
                     "type": "integer"
-                }
-            }
-        },
-        "models.Cinema": {
-            "type": "object",
-            "properties": {
-                "cinema_id": {
-                    "type": "integer"
-                },
-                "cinema_name": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.City": {
-            "type": "object",
-            "properties": {
-                "city_id": {
-                    "type": "integer"
-                },
-                "city_name": {
-                    "type": "string"
                 }
             }
         },
@@ -907,17 +982,11 @@ const docTemplate = `{
         "models.History": {
             "type": "object",
             "properties": {
-                "cinema": {
-                    "$ref": "#/definitions/models.Cinema"
+                "cinema_name": {
+                    "type": "string"
                 },
-                "cinema_id": {
-                    "type": "integer"
-                },
-                "city": {
-                    "$ref": "#/definitions/models.City"
-                },
-                "city_id": {
-                    "type": "integer"
+                "city_name": {
+                    "type": "string"
                 },
                 "code_ticket": {
                     "type": "string"
@@ -925,31 +994,25 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "movie": {
-                    "$ref": "#/definitions/models.Movie"
-                },
-                "movie_id": {
-                    "type": "integer"
+                "movie_title": {
+                    "type": "string"
                 },
                 "paid_at": {
                     "type": "string"
                 },
-                "payment": {
-                    "$ref": "#/definitions/models.Payment"
-                },
                 "payment_id": {
                     "type": "integer"
+                },
+                "payment_method": {
+                    "type": "string"
                 },
                 "rating": {
                     "type": "number"
                 },
-                "schedule": {
-                    "$ref": "#/definitions/models.Schedule"
+                "schedule_time": {
+                    "type": "string"
                 },
-                "schedule_id": {
-                    "type": "integer"
-                },
-                "seat": {
+                "seats": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Seat"
@@ -977,35 +1040,6 @@ const docTemplate = `{
                 "is_success": {
                     "type": "boolean",
                     "example": false
-                }
-            }
-        },
-        "models.Movie": {
-            "type": "object",
-            "properties": {
-                "backdrop_path": {
-                    "type": "string"
-                },
-                "director_id": {
-                    "type": "integer"
-                },
-                "duration": {
-                    "type": "integer"
-                },
-                "movie_id": {
-                    "type": "integer"
-                },
-                "overview": {
-                    "type": "string"
-                },
-                "poster_path": {
-                    "type": "string"
-                },
-                "release_date": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
                 }
             }
         },
@@ -1118,17 +1152,6 @@ const docTemplate = `{
                 "page": {
                     "type": "integer",
                     "example": 1
-                }
-            }
-        },
-        "models.Payment": {
-            "type": "object",
-            "properties": {
-                "payment_id": {
-                    "type": "integer"
-                },
-                "payment_method": {
-                    "type": "string"
                 }
             }
         },
@@ -1262,13 +1285,22 @@ const docTemplate = `{
         "models.TokenResponse": {
             "type": "object",
             "properties": {
+                "avatar_path": {
+                    "type": "string"
+                },
                 "code": {
                     "type": "integer",
                     "example": 200
                 },
+                "first_name": {
+                    "type": "string"
+                },
                 "is_success": {
                     "type": "boolean",
                     "example": true
+                },
+                "last_name": {
+                    "type": "string"
                 },
                 "message": {
                     "type": "string",
@@ -1277,6 +1309,10 @@ const docTemplate = `{
                 "page": {
                     "type": "integer",
                     "example": 1
+                },
+                "role": {
+                    "type": "string",
+                    "example": "user"
                 },
                 "token": {
                     "type": "string",
