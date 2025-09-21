@@ -8,14 +8,17 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/models"
+	"github.com/m16yusuf/backend-chuba-tickitz/internal/utils"
+	"github.com/redis/go-redis/v9"
 )
 
 type AuthRepository struct {
-	db *pgxpool.Pool
+	db  *pgxpool.Pool
+	rdb *redis.Client
 }
 
-func NewAuthRepository(db *pgxpool.Pool) *AuthRepository {
-	return &AuthRepository{db: db}
+func NewAuthRepository(db *pgxpool.Pool, rdb *redis.Client) *AuthRepository {
+	return &AuthRepository{db: db, rdb: rdb}
 }
 
 // function to get user data
@@ -77,4 +80,16 @@ func (a *AuthRepository) NewUser(reqContxt context.Context, email, password stri
 
 	// return result returning from query as model user
 	return NewUser, nil
+}
+
+// function repo to redis db
+// blacklist token user
+func (a *AuthRepository) BlaclistToken(reqContxt context.Context, token string) error {
+	// use utils.BlacklistToken for logout token
+	if err := utils.BlaclistTokenRedish(reqContxt, *a.rdb, token); err != nil {
+		log.Println("failed blacklist token, ", err)
+		return err
+	}
+	// is success return nil
+	return nil
 }
