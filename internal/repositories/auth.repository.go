@@ -21,10 +21,14 @@ func NewAuthRepository(db *pgxpool.Pool) *AuthRepository {
 // function to get user data
 func (a *AuthRepository) GetUserWithEmail(reqContxt context.Context, email string) (models.User, error) {
 	// get user by input email and validate user
-	sql := "SELECT id, email, password, role FROM users WHERE email=$1"
+	// sql := "SELECT id, email, password, role FROM users WHERE email=$1"
+	sql := `SELECT u.id, u.email, u.password, u.role, p.first_name, p.last_name, p.avatar_path
+		FROM users u 
+		JOIN profiles p ON p.user_id = u.id
+		WHERE email=$1`
 
 	var User models.User
-	if err := a.db.QueryRow(reqContxt, sql, email).Scan(&User.Id, &User.Email, &User.Password, &User.Role); err != nil {
+	if err := a.db.QueryRow(reqContxt, sql, email).Scan(&User.Id, &User.Email, &User.Password, &User.Role, &User.FirstName, &User.LastName, &User.AvatarPath); err != nil {
 		if err == pgx.ErrNoRows {
 			return models.User{}, errors.New("user not found")
 		}
