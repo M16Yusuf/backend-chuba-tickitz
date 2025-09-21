@@ -76,3 +76,14 @@ func DeleteAllCache(reqContxt context.Context, rdb redis.Client) error {
 	// return error nill if success
 	return nil
 }
+
+// blaclist token if logout
+func BlaclistTokenRedish(reqCntxt context.Context, rdb redis.Client, token string) error {
+	err := rdb.Set(reqCntxt, "chuba_tickitz:blacklist:"+token, "true", 30*time.Minute).Err()
+	if err != nil {
+		log.Println("Redis Error saat blacklist token:", err)
+		return err
+	}
+	// return error nil, if success
+	return nil
+}
