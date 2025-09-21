@@ -13,7 +13,7 @@ func RegisterValidation(body models.Auth) error {
 	// ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
 	regexEmail := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 	if !regexEmail.Match([]byte(body.Email)) {
-		return errors.New("format penulisa email salah")
+		return errors.New("email format is wrong")
 	}
 
 	// cek format password
@@ -26,7 +26,7 @@ func RegisterValidation(body models.Auth) error {
 
 	log.Println(isNotHvSymbl, isNotHvChar, isNotHvDigit, islengEight)
 	if !isNotHvChar || !isNotHvSymbl || !isNotHvDigit || !islengEight {
-		return errors.New("email harus mengandung : huruf, angka, simbol, 8 karakter")
+		return errors.New("password must contain : character, digit, symbol, 8 characters leng")
 	}
 	return nil
 }
