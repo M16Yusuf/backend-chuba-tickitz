@@ -12,16 +12,12 @@ jobs:
   Build-andPublish:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Build Docker image
-        run: |
-          docker build -t ghcr.io/${{ github.actor }}/backend-chuba-tickitz:1.2 .
-
-      - name: Push Docker image
-        run: |
-          docker push ghcr.io/${{ github.actor }}/backend-chuba-tickitz:1.2
+      - run: echo "Building image for ${{ github.repository }}"
+      - name: Check out repository code
+        uses: actions/checkout@v5
+      - name: Build and publish docker image for ${{ github.repository }}
+        uses: macbre/push-to-ghcr@master
+        with:
+          image_name: ${{ github.repository }} # it will be lowercased internally
+          image_tag: 1.2
+          github_token: ${{ secrets.GITHUB_TOKEN }}
