@@ -13,7 +13,7 @@ import (
 // @title 											CHUBA TICKITZ
 // @version 										1.0
 // @description 								Ticketing application with restful API powered by gin
-// @host 												127.0.0.1:8080
+// @host												127.0.0.1:6969/api/
 // @securityDefinitions.apikey 	JWTtoken
 // @in header
 // @name Authorization
