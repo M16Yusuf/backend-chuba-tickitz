@@ -1,9 +1,9 @@
 name: Building Image and Pushing to GHCR
 on: [push]
 # enable permission fo rewrite current package
-permissions:
-  contents: read
-  packages: write
+# permissions:
+#   contents: read
+#   packages: write
 
 jobs:
   Build-andPublish:
