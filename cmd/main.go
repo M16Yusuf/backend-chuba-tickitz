@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"runtime"
 
 	"github.com/joho/godotenv"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/configs"
@@ -20,7 +21,7 @@ func main() {
 	// manual load ENV
 	if err := godotenv.Load(); err != nil {
 		log.Println("Failed to load env \nCause: ", err.Error())
-		return
+		// return
 	}
 
 	// Inisialization databae for this project
@@ -51,5 +52,9 @@ func main() {
 	router := routers.InitRouter(db, rdb)
 	//  run the engine gin
 	// Run this project on 127.0.0.1:8080 or localhost:8080
-	router.Run("127.0.0.1:8080")
+	if runtime.GOOS == "windows" {
+		router.Run("127.0.0.1:8080")
+	} else {
+		router.Run(":8080")
+	}
 }

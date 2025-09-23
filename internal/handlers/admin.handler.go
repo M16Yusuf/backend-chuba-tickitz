@@ -35,7 +35,7 @@ func (ah *AdminHandler) GetAllMovieAdmin(ctx *gin.Context) {
 	if err != nil {
 		page = 1
 	}
-	limit := 20
+	limit := 5
 	offset := (page - 1) * limit
 
 	// get data movies from database/repositories

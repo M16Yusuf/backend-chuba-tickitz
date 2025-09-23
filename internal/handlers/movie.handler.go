@@ -33,7 +33,7 @@ func (m *MovieHandler) UpcomingMovie(ctx *gin.Context) {
 	if err != nil {
 		page = 1
 	}
-	limit := 20
+	limit := 4
 	offset := (page - 1) * limit
 
 	movies, err := m.movRepo.GetUpcoming(ctx.Request.Context(), offset, limit)
@@ -88,7 +88,7 @@ func (m *MovieHandler) PopularMovie(ctx *gin.Context) {
 	if err != nil {
 		page = 1
 	}
-	limit := 20
+	limit := 4
 	offset := (page - 1) * limit
 
 	// call function query from repository to get popular movies
@@ -147,7 +147,7 @@ func (m *MovieHandler) FilterMovie(ctx *gin.Context) {
 	if err != nil {
 		page = 1
 	}
-	limit := 20
+	limit := 12
 	offset := (page - 1) * limit
 
 	// search and genre filter
@@ -168,17 +168,17 @@ func (m *MovieHandler) FilterMovie(ctx *gin.Context) {
 	}
 
 	// validate if movies is return empty data
-	if len(movies) == 0 {
-		ctx.JSON(http.StatusNotFound, models.ErrorResponse{
-			Response: models.Response{
-				IsSuccess: true,
-				Code:      404,
-				Page:      page,
-			},
-			Err: "Empty movie list",
-		})
-		return
-	}
+	// if len(movies) == 0 {
+	// 	ctx.JSON(http.StatusNotFound, models.ErrorResponse{
+	// 		Response: models.Response{
+	// 			IsSuccess: true,
+	// 			Code:      404,
+	// 			Page:      page,
+	// 		},
+	// 		Err: "Empty movie list",
+	// 	})
+	// 	return
+	// }
 
 	// send data movies as response
 	ctx.JSON(http.StatusOK, models.MoviesResponse{
