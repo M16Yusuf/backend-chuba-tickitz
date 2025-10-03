@@ -7,6 +7,11 @@ type Response struct {
 	Msg       string `json:"message,omitempty"  example:"Example message success..."`
 }
 
+type ResponseData struct {
+	Response
+	Data interface{} `json:"data,omitempty"`
+}
+
 type ErrorResponse struct {
 	Response
 	Err string `json:"error" example:"Error message..."`
