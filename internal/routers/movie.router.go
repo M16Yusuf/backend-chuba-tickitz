@@ -15,6 +15,7 @@ func InitMovieRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 
 	movieRouter.GET("/upcoming", mh.UpcomingMovie)
 	movieRouter.GET("/popular", mh.PopularMovie)
+	movieRouter.GET("/genres", mh.GetAllGenres)
 	movieRouter.GET("", mh.FilterMovie)
 	movieRouter.GET("/:movie_id", mh.GetDetailMovie)
 }

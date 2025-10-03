@@ -178,7 +178,7 @@ func (m *MovieRepository) GetFiltered(reqCntxt context.Context, offset, limit in
 	values = append(values, offset)
 
 	rows, err := m.db.Query(reqCntxt, sql, values...)
-	log.Println(rows)
+	// log.Println(rows)
 	if err != nil {
 		log.Println("internal server error : ", err.Error())
 		return []models.MovieList{}, err
@@ -201,7 +201,7 @@ func (m *MovieRepository) GetFiltered(reqCntxt context.Context, offset, limit in
 		}
 		Movies = append(Movies, Movie)
 	}
-	log.Println("test", Movies)
+	// log.Println("test", Movies)
 	return Movies, nil
 }
 
@@ -245,4 +245,44 @@ func (m *MovieRepository) GetMovieDetails(reqCntxt context.Context, movieID stri
 	}
 
 	return MovieDetails, nil
+}
+
+// function query get all genres
+func (m *MovieRepository) GetGenres(rqCntxt context.Context) ([]models.Genre, error) {
+
+	// Get cached genres from redis, before accesing database
+	rdbKey := "chuba_tickitz:all-genres"
+	cachedGenres, err := utils.RedisGetData[[]models.Genre](rqCntxt, *m.rdb, rdbKey)
+	if err != nil {
+		log.Println("Redis error :", err)
+	} else if cachedGenres != nil && len(*cachedGenres) > 0 {
+		return *cachedGenres, nil
+	}
+
+	// if there is no key/ no cached data, get all genres from database
+	sql := `SELECT id, name FROM genres`
+	rows, err := m.db.Query(rqCntxt, sql)
+	if err != nil {
+		log.Println("internal server error : ", err.Error())
+		return []models.Genre{}, err
+	}
+	defer rows.Close()
+
+	// process the rows
+	var genres []models.Genre
+	for rows.Next() {
+		var genre models.Genre
+		if err := rows.Scan(&genre.Id, &genre.Name); err != nil {
+			log.Println("Scan Error, ", err.Error())
+			return []models.Genre{}, err
+		}
+		genres = append(genres, genre)
+	}
+
+	// make cache genre after query data from database
+	if err := utils.RedisRenewData(rqCntxt, *m.rdb, rdbKey, genres, 5*time.Minute); err != nil {
+		log.Println("Failed to renew Redis cache:", err.Error())
+	}
+
+	return genres, nil
 }

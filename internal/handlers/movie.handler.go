@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -222,5 +223,30 @@ func (m *MovieHandler) GetDetailMovie(ctx *gin.Context) {
 			Code:      200,
 		},
 		Data: movieDetails,
+	})
+}
+
+// get all genres
+
+func (m *MovieHandler) GetAllGenres(ctx *gin.Context) {
+	genres, err := m.movRepo.GetGenres(ctx.Request.Context())
+	if err != nil {
+		log.Println("err cause:\n", err)
+		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Response: models.Response{
+				IsSuccess: false,
+				Code:      http.StatusInternalServerError,
+			},
+			Err: "internal server error",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, models.ResponseData{
+		Response: models.Response{
+			IsSuccess: true,
+			Code:      http.StatusOK,
+		},
+		Data: genres,
 	})
 }
