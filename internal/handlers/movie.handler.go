@@ -227,7 +227,14 @@ func (m *MovieHandler) GetDetailMovie(ctx *gin.Context) {
 }
 
 // get all genres
-
+// @Tags Movies
+// @Router /movies/genres [get]
+// @Summary Mendapatkan daftar semua genre film
+// @Description Mengambil daftar lengkap semua genre film yang tersedia.
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.ResponseData{data=[]string} "Daftar genre berhasil diambil"
+// @Failure 500 {object} models.InternalErrorResponse "Kesalahan server internal"
 func (m *MovieHandler) GetAllGenres(ctx *gin.Context) {
 	genres, err := m.movRepo.GetGenres(ctx.Request.Context())
 	if err != nil {
