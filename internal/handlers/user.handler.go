@@ -1,11 +1,8 @@
 package handlers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"path/filepath"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/m16yusuf/backend-chuba-tickitz/internal/models"
@@ -224,21 +221,20 @@ func (u *UserHandler) UpdateAvatar(ctx *gin.Context) {
 	}
 
 	// process the image
-	file := body.Image
-	ext := filepath.Ext(file.Filename)
-
-	filename := fmt.Sprintf("%d_images_%d%s", time.Now().UnixNano(), userID, ext)
-	location := filepath.Join("public/profile", filename)
-	if err := ctx.SaveUploadedFile(file, location); err != nil {
-		log.Println("Upload Failed.\nCause: ", err.Error())
-		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Response: models.Response{
-				IsSuccess: false,
-				Code:      400,
-			},
-			Err: "error when upload file",
-		})
-		return
+	var filename *string
+	if body.Image != nil {
+		UploadFileName, err := utils.FileUpload(ctx, body.Image, "profile")
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, models.ErrorResponse{
+				Response: models.Response{
+					IsSuccess: false,
+					Code:      http.StatusBadRequest,
+				},
+				Err: err.Error(),
+			})
+			return
+		}
+		filename = &UploadFileName
 	}
 
 	// save to database

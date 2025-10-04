@@ -84,7 +84,7 @@ func (u *UserRepository) EditUser(reqCntxt context.Context, body models.User, us
 }
 
 // edit user avatar
-func (u *UserRepository) EditAvatarProfile(reqCntxt context.Context, image string, id int) (models.User, error) {
+func (u *UserRepository) EditAvatarProfile(reqCntxt context.Context, image *string, id int) (models.User, error) {
 	sql := "UPDATE profiles SET avatar_path=$1 , updated_at=CURRENT_TIMESTAMP WHERE user_id=$2 RETURNING user_id, first_name, last_name, avatar_path, point, phone_number, gender, created_at, updated_at"
 
 	// execute the query into database, and bindit to new model user
